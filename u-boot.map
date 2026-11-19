@@ -1,0 +1,1447 @@
+Archive member included because of file (symbol)
+
+common/libcommon.a(cmd_autoscript.o)
+                              (__u_boot_cmd_autoscr)
+common/libcommon.a(cmd_boot.o)
+                              (__u_boot_cmd_reset)
+common/libcommon.a(cmd_bootm.o)
+                              (__u_boot_cmd_imls)
+common/libcommon.a(cmd_console.o)
+                              (__u_boot_cmd_coninfo)
+common/libcommon.a(cmd_elf.o)
+                              (__u_boot_cmd_bootvx)
+common/libcommon.a(cmd_flash.o)
+                              (__u_boot_cmd_erase)
+common/libcommon.a(cmd_itest.o)
+                              (__u_boot_cmd_itest)
+common/libcommon.a(cmd_jffs2.o)
+                              (__u_boot_cmd_fsinfo)
+common/libcommon.a(cmd_load.o)
+                              (__u_boot_cmd_loady)
+common/libcommon.a(cmd_mem.o)
+                              (__u_boot_cmd_cp)
+common/libcommon.a(cmd_mii.o)
+                              (__u_boot_cmd_board_passphrase_show)
+common/libcommon.a(cmd_misc.o)
+                              (__u_boot_cmd_sleep)
+common/libcommon.a(cmd_net.o)
+                              (__u_boot_cmd_ping)
+common/libcommon.a(cmd_nvedit.o)
+                              (__u_boot_cmd_run)
+common/libcommon.a(cmd_pci.o)
+                              (__u_boot_cmd_pci)
+common/libcommon.a(command.o)
+                              (__u_boot_cmd_dnishow)
+common/libcommon.a(console.o)
+                              common/libcommon.a(cmd_autoscript.o) (printf)
+common/libcommon.a(devices.o)
+                              common/libcommon.a(cmd_console.o) (stdio_names)
+common/libcommon.a(dlmalloc.o)
+                              common/libcommon.a(cmd_autoscript.o) (free)
+common/libcommon.a(env_common.o)
+                              common/libcommon.a(cmd_nvedit.o) (env_get_char)
+common/libcommon.a(env_flash.o)
+                              common/libcommon.a(env_common.o) (env_ptr)
+common/libcommon.a(flash.o)   common/libcommon.a(cmd_load.o) (addr2info)
+common/libcommon.a(hush.o)    common/libcommon.a(cmd_autoscript.o) (parse_string_outer)
+common/libcommon.a(lists.o)   common/libcommon.a(devices.o) (ListCreate)
+common/libcommon.a(miiphyutil.o)
+                              common/libcommon.a(cmd_mii.o) (miiphy_set_current_dev)
+common/libcommon.a(s_record.o)
+                              common/libcommon.a(cmd_load.o) (srec_decode)
+common/libcommon.a(xyzModem.o)
+                              common/libcommon.a(cmd_load.o) (xyzModem_stream_open)
+common/libcommon.a(main.o)    common/libcommon.a(cmd_mem.o) (readline)
+common/libcommon.a(crc16.o)   common/libcommon.a(xyzModem.o) (cyg_crc16)
+board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(ar7100_flash.o)
+                              common/libcommon.a(cmd_bootm.o) (flash_info)
+board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(lowlevel_init.o)
+                              cpu/mips/start.o (lowlevel_init)
+board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128.o)
+                              board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(ar7100_flash.o) (flash_get_geom)
+board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(rtl8366s_phy.o)
+                              board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128.o) (GpioSet)
+cpu/mips/libmips.a(cpu.o)     common/libcommon.a(cmd_boot.o) (do_reset)
+cpu/mips/libmips.a(interrupts.o)
+                              common/libcommon.a(cmd_bootm.o) (enable_interrupts)
+cpu/mips/libmips.a(cache.o)   cpu/mips/start.o (simple_mips_cache_reset)
+cpu/mips/ar7100/libar7100.a(ar7100_serial.o)
+                              common/libcommon.a(console.o) (serial_tstc)
+cpu/mips/ar7100/libar7100.a(meminit.o)
+                              board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128.o) (ar7100_ddr_find_size)
+lib_mips/libmips.a(board.o)   common/libcommon.a(command.o) (version_string)
+lib_mips/libmips.a(time.o)    lib_mips/libmips.a(board.o) (timer_init)
+lib_mips/libmips.a(mips_linux.o)
+                              common/libcommon.a(cmd_bootm.o) (do_bootm_linux)
+fs/cramfs/libcramfs.a(cramfs.o)
+                              common/libcommon.a(cmd_jffs2.o) (cramfs_load)
+fs/cramfs/libcramfs.a(uncompress.o)
+                              fs/cramfs/libcramfs.a(cramfs.o) (cramfs_uncompress_block)
+fs/jffs2/libjffs2.a(jffs2_1pass.o)
+                              fs/cramfs/libcramfs.a(cramfs.o) (mkmodestr)
+fs/jffs2/libjffs2.a(compr_rtime.o)
+                              fs/jffs2/libjffs2.a(jffs2_1pass.o) (rtime_decompress)
+fs/jffs2/libjffs2.a(compr_rubin.o)
+                              fs/jffs2/libjffs2.a(jffs2_1pass.o) (dynrubin_decompress)
+fs/jffs2/libjffs2.a(compr_zlib.o)
+                              fs/jffs2/libjffs2.a(jffs2_1pass.o) (zlib_decompress)
+fs/jffs2/libjffs2.a(mini_inflate.o)
+                              fs/jffs2/libjffs2.a(compr_zlib.o) (decompress_block)
+fs/squashfs/libsquashfs.a(squashfs.o)
+                              common/libcommon.a(cmd_jffs2.o) (squashfs_ls)
+fs/squashfs/libsquashfs.a(uncompress.o)
+                              fs/squashfs/libsquashfs.a(squashfs.o) (squashfs_uncompress_block)
+drivers/libdrivers.a(pci.o)   common/libcommon.a(cmd_pci.o) (pci_write_config_dword)
+net/libnet.a(net.o)           common/libcommon.a(cmd_net.o) (NetOurRootPath)
+net/libnet.a(tftp.o)          net/libnet.a(net.o) (TftpStart)
+net/libnet.a(bootp.o)         net/libnet.a(net.o) (BootpRequest)
+net/libnet.a(rarp.o)          net/libnet.a(net.o) (RarpRequest)
+net/libnet.a(eth.o)           net/libnet.a(net.o) (eth_get_dev)
+net/libnet.a(nfs.o)           net/libnet.a(net.o) (NfsStart)
+net/libnet.a(nmrp.o)          net/libnet.a(net.o) (overflow_count)
+rtc/librtc.a(date.o)          common/libcommon.a(cmd_bootm.o) (to_tm)
+lib_generic/libgeneric.a(crc32.o)
+                              common/libcommon.a(cmd_autoscript.o) (crc32)
+lib_generic/libgeneric.a(ctype.o)
+                              common/libcommon.a(cmd_jffs2.o) (_ctype)
+lib_generic/libgeneric.a(display_options.o)
+                              common/libcommon.a(cmd_bootm.o) (print_size)
+lib_generic/libgeneric.a(string.o)
+                              common/libcommon.a(hush.o) (strcat)
+lib_generic/libgeneric.a(vsprintf.o)
+                              common/libcommon.a(cmd_autoscript.o) (simple_strtoul)
+lib_generic/libgeneric.a(zlib.o)
+                              common/libcommon.a(cmd_bootm.o) (inflateEnd)
+lib_generic/libgeneric.a(LzmaDecode.o)
+                              fs/squashfs/libsquashfs.a(uncompress.o) (LzmaDecode)
+common/libcommon.a(exports.o)
+                              lib_mips/libmips.a(board.o) (jumptable_init)
+board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128_pci.o)
+                              drivers/libdrivers.a(pci.o) (pci_init_board)
+cpu/mips/ar7100/libar7100.a(ag7100.o)
+                              net/libnet.a(eth.o) (ag7100_enet_initialize)
+
+Allocating common symbols
+Common symbol       size              file
+
+dp_last_size        0x4               common/libcommon.a(cmd_mem.o)
+console_buffer      0x100             common/libcommon.a(main.o)
+NetArpWaitTry       0x4               net/libnet.a(net.o)
+uncompr_size        0x4               fs/squashfs/libsquashfs.a(squashfs.o)
+NetArpWaitPacketMAC
+                    0x4               net/libnet.a(net.o)
+last_reg_hi         0x4               common/libcommon.a(cmd_mii.o)
+flash_info          0x50c             board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(ar7100_flash.o)
+NetOurEther         0x6               net/libnet.a(net.o)
+NetOurIP            0x4               net/libnet.a(net.o)
+NetPingIP           0x4               net/libnet.a(net.o)
+NetServerIP         0x4               net/libnet.a(net.o)
+monitor_flash_len   0x4               lib_mips/libmips.a(board.o)
+___strtok           0x4               lib_generic/libgeneric.a(string.o)
+NetArpWaitTxPacketSize
+                    0x4               net/libnet.a(net.o)
+NetArpWaitReplyIP   0x4               net/libnet.a(net.o)
+NetRxPackets        0x40              net/libnet.a(net.o)
+NetArpWaitTxPacket  0x4               net/libnet.a(net.o)
+ag7100_macs         0x8               cpu/mips/ar7100/libar7100.a(ag7100.o)
+NetArpWaitPacketIP  0x4               net/libnet.a(net.o)
+super               0x4c              fs/cramfs/libcramfs.a(cramfs.o)
+NmrpFwOption        0x4               net/libnet.a(nmrp.o)
+NetOurPingIP        0x4               net/libnet.a(net.o)
+NetState            0x4               net/libnet.a(net.o)
+BootpTry            0x4               net/libnet.a(bootp.o)
+BootFile            0x80              net/libnet.a(net.o)
+dp_last_addr        0x4               common/libcommon.a(cmd_mem.o)
+his_pad_char        0x1               common/libcommon.a(cmd_load.o)
+last_data           0x4               common/libcommon.a(cmd_mii.o)
+os_data_count       0x4               common/libcommon.a(cmd_load.o)
+RarpTry             0x4               net/libnet.a(rarp.o)
+last_addr_hi        0x4               common/libcommon.a(cmd_mii.o)
+mm_last_size        0x4               common/libcommon.a(cmd_mem.o)
+os_data_init        0x4               common/libcommon.a(cmd_load.o)
+mm_last_addr        0x4               common/libcommon.a(cmd_mem.o)
+timeDelta           0x4               net/libnet.a(net.o)
+NetPingEther        0x6               net/libnet.a(net.o)
+NetIPID             0x4               net/libnet.a(net.o)
+last_reg_lo         0x4               common/libcommon.a(cmd_mii.o)
+timeHandler         0x4               net/libnet.a(net.o)
+nesting_level       0x4               common/libcommon.a(hush.o)
+send_ptr            0x4               common/libcommon.a(cmd_load.o)
+NmrpOuripaddr       0x4               net/libnet.a(nmrp.o)
+BootpID             0x4               net/libnet.a(bootp.o)
+last_return_code    0x4               common/libcommon.a(hush.o)
+NetRxPkt            0x4               net/libnet.a(net.o)
+os_data_header      0x20              common/libcommon.a(cmd_load.o)
+NmrpOuripSubnetMask
+                    0x4               net/libnet.a(nmrp.o)
+os_data_char        0x4               common/libcommon.a(cmd_load.o)
+last_op             0x2               common/libcommon.a(cmd_mii.o)
+NetArpWaitPacketBuf
+                    0x620             net/libnet.a(net.o)
+timeStart           0x4               net/libnet.a(net.o)
+his_eol             0x1               common/libcommon.a(cmd_load.o)
+header              0x40              common/libcommon.a(cmd_bootm.o)
+NetRxPktLen         0x4               net/libnet.a(net.o)
+his_quote           0x1               common/libcommon.a(cmd_load.o)
+NetBootFileXferSize
+                    0x4               net/libnet.a(net.o)
+last_addr_lo        0x4               common/libcommon.a(cmd_mii.o)
+PktBuf              0x6620            net/libnet.a(net.o)
+send_parms          0x14              common/libcommon.a(cmd_load.o)
+his_pad_count       0x4               common/libcommon.a(cmd_load.o)
+NetArpWaitTimerStart
+                    0x4               net/libnet.a(net.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+                0x0000000000000000                . = 0x0
+                0x0000000000000000                . = ALIGN (0x4)
+
+.text           0x00000000bf000000    0x2d880
+ *(.text)
+ .text          0x00000000bf000000      0x610 cpu/mips/start.o
+                0x00000000bf000544                relocate_code
+                0x00000000bf000000                _start
+ .text          0x00000000bf000610      0x280 common/libcommon.a(cmd_autoscript.o)
+                0x00000000bf000810                do_autoscript
+                0x00000000bf000610                autoscript
+ .text          0x00000000bf000890      0x150 common/libcommon.a(cmd_boot.o)
+                0x00000000bf000890                do_go
+ .text          0x00000000bf0009e0     0x1290 common/libcommon.a(cmd_bootm.o)
+                0x00000000bf000a30                print_image_hdr
+                0x00000000bf0009e0                do_bootd
+                0x00000000bf00122c                gunzip
+                0x00000000bf0013fc                do_bootm
+                0x00000000bf001128                do_iminfo
+ .text          0x00000000bf001c70      0x140 common/libcommon.a(cmd_console.o)
+                0x00000000bf001c70                do_coninfo
+ .text          0x00000000bf001db0      0x5a0 common/libcommon.a(cmd_elf.o)
+                0x00000000bf00222c                do_bootelf
+                0x00000000bf001f9c                do_bootvx
+                0x00000000bf001db0                valid_elf_image
+                0x00000000bf001e2c                load_elf_image
+ .text          0x00000000bf002350      0xf00 common/libcommon.a(cmd_flash.o)
+                0x00000000bf002878                do_flinfo
+                0x00000000bf00297c                flash_sect_erase
+                0x00000000bf002e70                do_protect
+                0x00000000bf002aa8                do_flerase
+                0x00000000bf002cf4                flash_sect_protect
+ .text          0x00000000bf003250      0x440 common/libcommon.a(cmd_itest.o)
+                0x00000000bf00330c                binary_test
+                0x00000000bf003594                do_itest
+ .text          0x00000000bf003690      0x880 common/libcommon.a(cmd_jffs2.o)
+                0x00000000bf0037ec                mtdparts_init
+                0x00000000bf003690                id_parse
+                0x00000000bf003de8                do_jffs2_fsinfo
+                0x00000000bf003d10                do_jffs2_ls
+                0x00000000bf003aa0                do_jffs2_fsload
+ .text          0x00000000bf003f10     0x12f0 common/libcommon.a(cmd_load.o)
+                0x00000000bf0045cc                k_data_init
+                0x00000000bf0043d8                s1_sendpacket
+                0x00000000bf004730                handle_send_packet
+                0x00000000bf00463c                k_data_restore
+                0x00000000bf0044c4                send_nack
+                0x00000000bf0049dc                do_load_serial_bin
+                0x00000000bf00468c                k_data_char
+                0x00000000bf0043a0                chk1
+                0x00000000bf0045ec                k_data_save
+                0x00000000bf004364                ktrans
+                0x00000000bf00430c                send_pad
+                0x00000000bf004438                send_ack
+                0x00000000bf003f10                do_load_serial
+ .text          0x00000000bf005200     0x1050 common/libcommon.a(cmd_mem.o)
+                0x00000000bf005ac4                do_mem_base
+                0x00000000bf005588                do_mem_mw
+                0x00000000bf006114                do_mem_crc
+                0x00000000bf006084                do_mem_nm
+                0x00000000bf0060cc                do_mem_mm
+                0x00000000bf0058ec                do_mem_cp
+                0x00000000bf005cb8                do_mem_mtest
+                0x00000000bf0056dc                do_mem_cmp
+                0x00000000bf005200                cmd_get_data_size
+                0x00000000bf005b30                do_mem_loop
+                0x00000000bf0052b8                do_mem_md
+ .text          0x00000000bf006250     0x1d80 common/libcommon.a(cmd_mii.o)
+                0x00000000bf006e00                set_board_data
+                0x00000000bf007e24                do_board_passphrase_set
+                0x00000000bf0072b0                do_wpspinset
+                0x00000000bf0078c8                do_rnshow
+                0x00000000bf007a44                get_board_hw_id
+                0x00000000bf006dd4                get_board_data
+                0x00000000bf0073ec                do_snset
+                0x00000000bf007a64                do_board_hw_id_show
+                0x00000000bf007c10                do_board_model_id_show
+                0x00000000bf007dbc                do_board_ssid_show
+                0x00000000bf007bf0                get_board_model_id
+                0x00000000bf007f48                get_board_passphrase
+                0x00000000bf007f68                do_board_passphrase_show
+                0x00000000bf006250                MII_dump_0_to_5
+                0x00000000bf006c98                do_mac
+                0x00000000bf006660                do_mii
+                0x00000000bf007c78                do_board_ssid_set
+                0x00000000bf007920                do_board_hw_id_set
+                0x00000000bf0071bc                do_wndr3700_macshow
+                0x00000000bf006ec8                do_wndr3700_macset
+                0x00000000bf007acc                do_board_model_id_set
+                0x00000000bf007d9c                get_board_ssid
+                0x00000000bf0075fc                set_region
+                0x00000000bf007718                do_rnset
+ .text          0x00000000bf007fd0      0x100 common/libcommon.a(cmd_misc.o)
+                0x00000000bf007fd0                do_sleep
+ .text          0x00000000bf0080d0      0x520 common/libcommon.a(cmd_net.o)
+                0x00000000bf0084c4                do_rarpb
+                0x00000000bf008504                do_ping
+                0x00000000bf0084a4                do_tftpb
+                0x00000000bf0084e4                do_bootp
+                0x00000000bf008484                do_nfs
+ .text          0x00000000bf0085f0      0xd90 common/libcommon.a(cmd_nvedit.o)
+                0x00000000bf00912c                getenv
+                0x00000000bf008904                _do_setenv
+                0x00000000bf009208                getenv_r
+                0x00000000bf008694                do_printenv
+                0x00000000bf009064                setenv
+                0x00000000bf00932c                do_saveenv
+                0x00000000bf0090b8                do_setenv
+ .text          0x00000000bf009380     0x1960 common/libcommon.a(cmd_pci.o)
+                0x00000000bf009610                pci_header_show
+                0x00000000bf00a3e8                pciinfo
+                0x00000000bf00a79c                do_pci
+                0x00000000bf009548                pci_header_show_brief
+ .text          0x00000000bf00ace0      0xe80 common/libcommon.a(command.o)
+                0x00000000bf00ad20                do_echo
+                0x00000000bf00b5e0                do_exit
+                0x00000000bf00b634                find_cmd
+                0x00000000bf00ae08                do_test
+                0x00000000bf00b754                do_help
+                0x00000000bf00b9d8                do_dnishow
+                0x00000000bf00ace0                do_version
+ .text          0x00000000bf00bb60      0x890 common/libcommon.a(console.o)
+                0x00000000bf00c19c                console_init_r
+                0x00000000bf00beec                printf
+                0x00000000bf00c070                console_assign
+                0x00000000bf00bdf4                getc
+                0x00000000bf00beb0                puts
+                0x00000000bf00c060                dbg
+                0x00000000bf00bc48                serial_printf
+                0x00000000bf00bcd8                ftstc
+                0x00000000bf00bd94                fprintf
+                0x00000000bf00be30                tstc
+                0x00000000bf00bf44                vprintf
+                0x00000000bf00bf90                ctrlc
+                0x00000000bf00be6c                putc
+                0x00000000bf00c014                disable_ctrlc
+                0x00000000bf00bca0                fgetc
+                0x00000000bf00c030                had_ctrlc
+                0x00000000bf00bd10                fputc
+                0x00000000bf00c18c                console_init_f
+                0x00000000bf00c048                clear_ctrlc
+                0x00000000bf00bd54                fputs
+ .text          0x00000000bf00c3f0      0x180 common/libcommon.a(devices.o)
+                0x00000000bf00c3f0                device_register
+                0x00000000bf00c530                devices_done
+                0x00000000bf00c434                devices_init
+ .text          0x00000000bf00c570     0x14b0 common/libcommon.a(dlmalloc.o)
+                0x00000000bf00c96c                malloc
+                0x00000000bf00d7e0                pvalloc
+                0x00000000bf00d804                calloc
+                0x00000000bf00d930                malloc_usable_size
+                0x00000000bf00d0b8                realloc
+                0x00000000bf00c5d0                malloc_trim
+                0x00000000bf00c570                malloc_bin_reloc
+                0x00000000bf00d988                mallopt
+                0x00000000bf00d62c                memalign
+                0x00000000bf00d918                cfree
+                0x00000000bf00d7c4                valloc
+                0x00000000bf00c6f8                free
+ .text          0x00000000bf00da20      0x1f0 common/libcommon.a(env_common.o)
+                0x00000000bf00daf0                env_get_addr
+                0x00000000bf00db20                env_relocate
+                0x00000000bf00da20                env_crc_update
+                0x00000000bf00dabc                env_get_char_memory
+ .text          0x00000000bf00dc10      0x210 common/libcommon.a(env_flash.o)
+                0x00000000bf00ddf8                env_relocate_spec
+                0x00000000bf00dca0                saveenv
+                0x00000000bf00dc10                env_get_char_spec
+                0x00000000bf00dc20                env_init
+ .text          0x00000000bf00de20      0x510 common/libcommon.a(flash.o)
+                0x00000000bf00e040                flash_write
+                0x00000000bf00de20                flash_protect
+                0x00000000bf00dfec                addr2info
+                0x00000000bf00e1f0                flash_perror
+ .text          0x00000000bf00e330     0x2990 common/libcommon.a(hush.o)
+                0x00000000bf00edc8                new_pipe
+                0x00000000bf00f718                mapset
+                0x00000000bf010b60                parse_string_outer
+                0x00000000bf00f758                update_ifs_map
+                0x00000000bf010afc                parse_file_outer
+                0x00000000bf00e52c                simple_itoa
+                0x00000000bf00f020                reserved_word
+                0x00000000bf00f80c                u_boot_hush_start
+ .text          0x00000000bf010cc0      0x590 common/libcommon.a(lists.o)
+                0x00000000bf010d6c                DisposeHandle
+                0x00000000bf010f18                ListDispose
+                0x00000000bf010f30                ListInsertItems
+                0x00000000bf010f08                ListSetAllocationPolicy
+                0x00000000bf011238                ListGetItemSize
+                0x00000000bf01122c                ListGetDataPtr
+                0x00000000bf010cc0                NewHandle
+                0x00000000bf010dd0                SetHandleSize
+                0x00000000bf01117c                ListInsertItem
+                0x00000000bf010dc8                GetHandleSize
+                0x00000000bf011244                ListNumItems
+                0x00000000bf0111ec                ListGetPtrToItem
+                0x00000000bf010e98                ListCreate
+                0x00000000bf011194                ListGetItems
+ .text          0x00000000bf011250      0xa60 common/libcommon.a(miiphyutil.o)
+                0x00000000bf0119b4                miiphy_speed
+                0x00000000bf011740                miiphy_info
+                0x00000000bf011898                miiphy_reset
+                0x00000000bf01141c                miiphy_set_current_dev
+                0x00000000bf011688                miiphy_listdev
+                0x00000000bf0114e4                miiphy_read
+                0x00000000bf0114bc                miiphy_get_current_dev
+                0x00000000bf011ae4                miiphy_duplex
+                0x00000000bf0115b4                miiphy_write
+                0x00000000bf011278                miiphy_register
+                0x00000000bf011250                miiphy_init
+                0x00000000bf011c14                miiphy_link
+ .text          0x00000000bf011cb0      0x410 common/libcommon.a(s_record.o)
+                0x00000000bf011d88                srec_decode
+ .text          0x00000000bf0120c0     0x1100 common/libcommon.a(xyzModem.o)
+                0x00000000bf013114                xyzModem_error
+                0x00000000bf012eb4                xyzModem_stream_close
+                0x00000000bf0120c0                CYGACC_COMM_IF_GETC_TIMEOUT
+                0x00000000bf012190                parse_num
+                0x00000000bf012f30                xyzModem_stream_terminate
+                0x00000000bf0128e4                xyzModem_stream_open
+                0x00000000bf012174                CYGACC_COMM_IF_PUTC
+                0x00000000bf012af0                xyzModem_stream_read
+ .text          0x00000000bf0131c0      0xc90 common/libcommon.a(main.o)
+                0x00000000bf013820                run_command
+                0x00000000bf013d6c                do_run
+                0x00000000bf0135a0                readline
+                0x00000000bf0131c0                main_loop
+ .text          0x00000000bf013e50       0x60 common/libcommon.a(crc16.o)
+                0x00000000bf013e50                cyg_crc16
+ .text          0x00000000bf013eb0      0x9d0 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(ar7100_flash.o)
+                0x00000000bf0141a8                flash_erase
+                0x00000000bf013fbc                flash_init
+                0x00000000bf01418c                flash_print_info
+                0x00000000bf01445c                write_buff
+ .text          0x00000000bf014880      0x370 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(lowlevel_init.o)
+                0x00000000bf014880                lowlevel_init
+ .text          0x00000000bf014bf0     0x1000 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128.o)
+                0x00000000bf0150e8                board_upgrade_string_table
+                0x00000000bf014f14                board_reset_default_LedSet
+                0x00000000bf015054                board_reset_default
+                0x00000000bf014ed4                board_reset_button_is_press
+                0x00000000bf0154c0                board_get_image_info
+                0x00000000bf015644                board_match_image_hw_id
+                0x00000000bf015a68                board_update_image_model_id
+                0x00000000bf014e40                board_test_led
+                0x00000000bf014cd8                checkboard
+                0x00000000bf014d14                flash_get_geom
+                0x00000000bf014c94                initdram
+                0x00000000bf014fa8                Update_LedSet
+                0x00000000bf014dac                board_power_led
+                0x00000000bf014bf0                ar7100_mem_config
+                0x00000000bf015944                board_match_image_model_id
+ .text          0x00000000bf015bf0     0x10f0 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(rtl8366s_phy.o)
+                0x00000000bf0161a0                smi_reset
+                0x00000000bf015db8                _smi_writeBit
+                0x00000000bf0164e0                smi_write
+                0x00000000bf0168e0                rtl8366s_getAsicLedIndicateInfoConfig
+                0x00000000bf016c38                rtl8366s_phy_setup
+                0x00000000bf015ee4                _smi_readBit
+                0x00000000bf016964                rtl8366s_initChip
+                0x00000000bf015bf0                GpioSet
+                0x00000000bf0167dc                rtl8366s_getAsicReg
+                0x00000000bf016834                rtl8366s_setAsicLedIndicateInfoConfig
+                0x00000000bf016710                rtl8366s_setAsicReg
+                0x00000000bf0162f4                smi_read
+                0x00000000bf015c28                _smi_start
+                0x00000000bf015c18                GpioGet
+                0x00000000bf016000                _smi_stop
+                0x00000000bf016750                rtl8366s_setAsicForceLeds
+                0x00000000bf016290                smi_init
+ .text          0x00000000bf016ce0       0xb0 cpu/mips/libmips.a(cpu.o)
+                0x00000000bf016d28                flush_cache
+                0x00000000bf016ce0                do_reset
+                0x00000000bf016d50                write_one_tlb
+ .text          0x00000000bf016d90       0x10 cpu/mips/libmips.a(interrupts.o)
+                0x00000000bf016d98                disable_interrupts
+                0x00000000bf016d90                enable_interrupts
+ .text          0x00000000bf016da0      0x330 cpu/mips/libmips.a(cache.o)
+                0x00000000bf017008                dcache_flush_range
+                0x00000000bf016de8                mips_cache_reset
+                0x00000000bf016fac                mips_cache_lock
+                0x00000000bf016da0                simple_mips_cache_reset
+                0x00000000bf017084                mips_cache_lock_24k
+                0x00000000bf017030                mips_cache_flush
+                0x00000000bf016f80                dcache_status
+                0x00000000bf016f90                dcache_disable
+ .text          0x00000000bf0170d0      0x2d0 cpu/mips/ar7100/libar7100.a(ar7100_serial.o)
+                0x00000000bf017348                serial_setbrg
+                0x00000000bf017284                serial_tstc
+                0x00000000bf0172dc                serial_putc
+                0x00000000bf0170d0                ar7100_sys_frequency
+                0x00000000bf0171b4                serial_init
+                0x00000000bf017350                serial_puts
+                0x00000000bf017298                serial_getc
+ .text          0x00000000bf0173a0      0x690 cpu/mips/ar7100/libar7100.a(meminit.o)
+                0x00000000bf017680                ar7100_ddr_get_width
+                0x00000000bf0178b4                ar7100_ddr_initial_config
+                0x00000000bf0173a0                ar7100_ddr_tap_set
+                0x00000000bf0173d0                ar7100_ddr_tap_config
+                0x00000000bf01770c                sanity_mem_check
+                0x00000000bf0177e4                ar7100_ddr_find_size
+ .text          0x00000000bf017a30      0x890 lib_mips/libmips.a(board.o)
+                0x00000000bf017c20                hang
+                0x00000000bf017a38                start_tftp_recovery_mode
+                0x00000000bf017e5c                board_init_r
+                0x00000000bf017a84                sbrk
+                0x00000000bf017c50                board_init_f
+                0x00000000bf017a30                GetMagicNumberOfBoard
+ .text          0x00000000bf0182c0       0xc0 lib_mips/libmips.a(time.o)
+                0x00000000bf0182e8                set_timer
+                0x00000000bf0182d0                reset_timer
+                0x00000000bf018368                get_tbclk
+                0x00000000bf0182dc                get_timer
+                0x00000000bf0182c0                timer_init
+                0x00000000bf0182f0                udelay
+                0x00000000bf018358                get_ticks
+ .text          0x00000000bf018380      0x780 lib_mips/libmips.a(mips_linux.o)
+                0x00000000bf0184a8                do_bootm_linux
+ .text          0x00000000bf018b00      0xf40 fs/cramfs/libcramfs.a(cramfs.o)
+                0x00000000bf01987c                cramfs_info
+                0x00000000bf0199bc                cramfs_check
+                0x00000000bf019138                cramfs_load
+                0x00000000bf01955c                cramfs_ls
+ .text          0x00000000bf019a40      0x1b0 fs/cramfs/libcramfs.a(uncompress.o)
+                0x00000000bf019bb4                cramfs_uncompress_exit
+                0x00000000bf019a7c                cramfs_uncompress_block
+                0x00000000bf019b28                cramfs_uncompress_init
+ .text          0x00000000bf019bf0     0x1e90 fs/jffs2/libjffs2.a(jffs2_1pass.o)
+                0x00000000bf01b524                jffs2_1pass_load
+                0x00000000bf01b8a8                jffs2_1pass_info
+                0x00000000bf01abf4                jffs2_1pass_ls
+                0x00000000bf01a5bc                jffs2_1pass_rescan_needed
+                0x00000000bf01a220                mkmodestr
+                0x00000000bf019d58                jffs2_free_cache
+ .text          0x00000000bf01ba80       0xe0 fs/jffs2/libjffs2.a(compr_rtime.o)
+                0x00000000bf01ba80                rtime_decompress
+ .text          0x00000000bf01bb60      0x1a0 fs/jffs2/libjffs2.a(compr_rubin.o)
+                0x00000000bf01bc98                dynrubin_decompress
+                0x00000000bf01bb60                rubin_do_decompress
+ .text          0x00000000bf01bd00       0x30 fs/jffs2/libjffs2.a(compr_zlib.o)
+                0x00000000bf01bd00                zlib_decompress
+ .text          0x00000000bf01bd30     0x1020 fs/jffs2/libjffs2.a(mini_inflate.o)
+                0x00000000bf01c2f0                decompress_block
+                0x00000000bf01bd5c                pull_bits
+                0x00000000bf01bdc4                pull_bit
+                0x00000000bf01bd30                cramfs_memset
+ .text          0x00000000bf01cd50     0x15d0 fs/squashfs/libsquashfs.a(squashfs.o)
+                0x00000000bf01ddf0                squashfs_ls
+                0x00000000bf01e23c                squashfs_check
+                0x00000000bf01d1e4                squashfs_read_super
+                0x00000000bf01e190                squashfs_load
+                0x00000000bf01d05c                read_fragment_table
+                0x00000000bf01debc                squashfs_info
+ .text          0x00000000bf01e320      0x140 fs/squashfs/libsquashfs.a(uncompress.o)
+                0x00000000bf01e3a0                squashfs_uncompress_init
+                0x00000000bf01e424                squashfs_uncompress_exit
+                0x00000000bf01e320                squashfs_uncompress_block
+ .text          0x00000000bf01e460      0xf90 drivers/libdrivers.a(pci.o)
+                0x00000000bf01f180                pci_cfgfunc_config_device
+                0x00000000bf01f1cc                pci_hose_scan_bus
+                0x00000000bf01ece0                pci_hose_phys_to_bus
+                0x00000000bf01f1c4                pci_cfgfunc_do_nothing
+                0x00000000bf01e478                pci_hose_read_config_dword
+                0x00000000bf01e4a8                pci_hose_read_config_byte_via_dword
+                0x00000000bf01ee68                pci_hose_config_device
+                0x00000000bf01f0b8                pci_find_config
+                0x00000000bf01e490                pci_hose_write_config_word
+                0x00000000bf01e980                pci_read_config_dword
+                0x00000000bf01eda0                pci_hose_bus_to_phys
+                0x00000000bf01e590                pci_hose_write_config_byte_via_dword
+                0x00000000bf01e51c                pci_hose_read_config_word_via_dword
+                0x00000000bf01f3d0                pci_init
+                0x00000000bf01ea14                pci_read_config_word
+                0x00000000bf01f3b8                pci_hose_scan
+                0x00000000bf01ecb4                pci_find_device
+                0x00000000bf01e65c                pci_hose_write_config_word_via_dword
+                0x00000000bf01eb44                pci_find_devices
+                0x00000000bf01e728                pci_register_hose
+                0x00000000bf01e760                pci_bus_to_hose
+                0x00000000bf01e49c                pci_hose_write_config_dword
+                0x00000000bf01e8f0                pci_write_config_byte
+                0x00000000bf01e46c                pci_hose_read_config_word
+                0x00000000bf01eaac                pci_read_config_byte
+                0x00000000bf01e484                pci_hose_write_config_byte
+                0x00000000bf01e860                pci_write_config_word
+                0x00000000bf01e7d0                pci_write_config_dword
+                0x00000000bf01e460                pci_hose_read_config_byte
+ .text          0x00000000bf01f3f0     0x2730 net/libnet.a(net.o)
+                0x00000000bf020940                getenv_IPaddr
+                0x00000000bf02001c                NetCksumOk
+                0x00000000bf01f638                NetSetTimeout
+                0x00000000bf020094                copy_filename
+                0x00000000bf02005c                NetEthHdrSize
+                0x00000000bf021294                update_firmware
+                0x00000000bf021aa4                StartNmrpClient
+                0x00000000bf020110                ip_to_string
+                0x00000000bf021780                UpgradeFirmwareFromNmrpServer
+                0x00000000bf01f834                ArpTimeoutCheck
+                0x00000000bf0201b4                NetReceive
+                0x00000000bf02089c                string_to_ip
+                0x00000000bf01fa74                NetSendUDPPacket
+                0x00000000bf020170                print_IPaddr
+                0x00000000bf01f3f0                NetSetEther
+                0x00000000bf020a88                NetLoop
+                0x00000000bf01f4a0                ArpRequest
+                0x00000000bf0218fc                UpgradeStringTableFromNmrpServer
+                0x00000000bf021af4                ResetBootup_usual
+                0x00000000bf02097c                VLAN_to_string
+                0x00000000bf020a44                getenv_VLAN
+                0x00000000bf01f914                NetCksum
+                0x00000000bf01f95c                NetSetIP
+                0x00000000bf0209e0                string_to_VLAN
+                0x00000000bf02159c                ResetTftpServer
+                0x00000000bf0215dc                StartTftpServerToRecoveFirmware
+                0x00000000bf021200                flash_in_which_sec
+                0x00000000bf01f6b4                NetStartAgain
+                0x00000000bf01fc40                MyPingReply
+                0x00000000bf01f69c                NetSetHandler
+                0x00000000bf01fdc0                PingSend
+                0x00000000bf01f8fc                NetSendPacket
+ .text          0x00000000bf021b20     0x11c0 net/libnet.a(tftp.o)
+                0x00000000bf022bb0                TftpServerStart
+                0x00000000bf02227c                TftpStart
+ .text          0x00000000bf022ce0      0x8b0 net/libnet.a(bootp.o)
+                0x00000000bf02322c                BootpRequest
+ .text          0x00000000bf023590      0x280 net/libnet.a(rarp.o)
+                0x00000000bf023640                RarpRequest
+ .text          0x00000000bf023810      0xa40 net/libnet.a(eth.o)
+                0x00000000bf023828                eth_get_dev_by_name
+                0x00000000bf024098                eth_halt
+                0x00000000bf023908                eth_register
+                0x00000000bf023810                eth_get_dev
+                0x00000000bf023eec                eth_try_another
+                0x00000000bf023d94                eth_set_enetaddr
+                0x00000000bf023a04                eth_initialize
+                0x00000000bf02415c                eth_set_current
+                0x00000000bf024128                eth_rx
+                0x00000000bf0238ac                eth_get_dev_index
+                0x00000000bf023fc8                eth_init
+                0x00000000bf024224                eth_get_name
+                0x00000000bf0240f0                eth_send
+ .text          0x00000000bf024250     0x10f0 net/libnet.a(nfs.o)
+                0x00000000bf024fec                NfsStart
+ .text          0x00000000bf025340      0xf00 net/libnet.a(nmrp.o)
+                0x00000000bf02545c                NmrpSend
+                0x00000000bf026108                NmrpStart
+                0x00000000bf025340                Nmrp_Led_Flashing_Timeout
+                0x00000000bf025bbc                string_table_bitmask_check
+                0x00000000bf025988                Nmrp_Closing_Timeout
+                0x00000000bf025c24                NmrpHandler
+                0x00000000bf0253d8                NmrpSetTimeout
+ .text          0x00000000bf026240      0x3d0 rtc/librtc.a(date.o)
+                0x00000000bf026240                GregorianDay
+                0x00000000bf02652c                mktime
+                0x00000000bf0263b8                to_tm
+ .text          0x00000000bf026610      0x320 lib_generic/libgeneric.a(crc32.o)
+                0x00000000bf026610                crc32
+                0x00000000bf0267a0                crc32_no_comp
+ .text          0x00000000bf026930      0x150 lib_generic/libgeneric.a(display_options.o)
+                0x00000000bf026930                display_options
+                0x00000000bf026970                print_size
+ .text          0x00000000bf026a80      0x6d0 lib_generic/libgeneric.a(string.o)
+                0x00000000bf026fa8                memmove
+                0x00000000bf026f78                memcpy
+                0x00000000bf026ef0                strswab
+                0x00000000bf026c60                strnlen
+                0x00000000bf026be8                strrchr
+                0x00000000bf026b04                strcat
+                0x00000000bf027114                memchr
+                0x00000000bf027054                strstr
+                0x00000000bf026dc4                strtok
+                0x00000000bf027024                memcmp
+                0x00000000bf026b3c                strncat
+                0x00000000bf026c9c                strdup
+                0x00000000bf026f4c                memset
+                0x00000000bf026e84                strsep
+                0x00000000bf026a80                strnicmp
+                0x00000000bf026d14                strspn
+                0x00000000bf026bc4                strlen
+                0x00000000bf026b88                strchr
+                0x00000000bf026d74                strpbrk
+ .text          0x00000000bf027150      0xa00 lib_generic/libgeneric.a(vsprintf.o)
+                0x00000000bf027540                vsprintf
+                0x00000000bf027238                simple_strtol
+                0x00000000bf027acc                panic
+                0x00000000bf027a90                sprintf
+                0x00000000bf027150                simple_strtoul
+ .text          0x00000000bf027b50     0x2f00 lib_generic/libgeneric.a(zlib.o)
+                0x00000000bf028aa0                inflate
+                0x00000000bf027f7c                inflateInit2
+                0x00000000bf0281b8                inflateIncomp
+                0x00000000bf02a88c                adler32
+                0x00000000bf027dc8                inflateReset
+                0x00000000bf027e3c                inflateSync
+                0x00000000bf028124                inflateInit
+                0x00000000bf027cfc                inflateEnd
+ .text          0x00000000bf02aa50      0xf80 lib_generic/libgeneric.a(LzmaDecode.o)
+                0x00000000bf02b7bc                lzma_unzip
+                0x00000000bf02aa90                LzmaDecodeProperties
+                0x00000000bf02ab64                LzmaDecode
+ .text          0x00000000bf02b9d0       0xb0 common/libcommon.a(exports.o)
+                0x00000000bf02b9e0                jumptable_init
+                0x00000000bf02b9d8                get_version
+ .text          0x00000000bf02ba80      0x790 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128_pci.o)
+                0x00000000bf02c000                pci_init_board
+                0x00000000bf02bdd8                plat_dev_init
+ .text          0x00000000bf02c210     0x1670 cpu/mips/ar7100/libar7100.a(ag7100.o)
+                0x00000000bf02ce98                ag7100_enet_initialize
+                0x00000000bf02d5d8                ag7100_miiphy_read
+                0x00000000bf02d760                ag7100_miiphy_write
+                0x00000000bf02ce90                ag7100_mac_addr_loc
+                0x00000000bf02c210                ag7100_get_link_status
+                0x00000000bf02c250                ag7100_unit2mac
+                0x00000000bf02d880                . = ALIGN (0x4)
+
+.rodata         0x00000000bf02d880      0xda0
+ *(.rodata)
+ .rodata        0x00000000bf02d880       0xb0 common/libcommon.a(cmd_bootm.o)
+ .rodata        0x00000000bf02d930       0x30 common/libcommon.a(cmd_itest.o)
+ .rodata        0x00000000bf02d960       0x10 common/libcommon.a(cmd_mii.o)
+ .rodata        0x00000000bf02d970       0x10 common/libcommon.a(cmd_nvedit.o)
+ .rodata        0x00000000bf02d980       0x30 common/libcommon.a(s_record.o)
+ .rodata        0x00000000bf02d9b0       0x20 common/libcommon.a(xyzModem.o)
+ .rodata        0x00000000bf02d9d0      0x200 common/libcommon.a(crc16.o)
+ .rodata        0x00000000bf02dbd0      0x370 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(rtl8366s_phy.o)
+ .rodata        0x00000000bf02df40       0x30 lib_mips/libmips.a(board.o)
+                0x00000000bf02df40                version_string
+ .rodata        0x00000000bf02df70       0xc0 fs/jffs2/libjffs2.a(jffs2_1pass.o)
+ .rodata        0x00000000bf02e030       0x70 net/libnet.a(net.o)
+ .rodata        0x00000000bf02e0a0       0x20 net/libnet.a(tftp.o)
+ .rodata        0x00000000bf02e0c0       0x10 net/libnet.a(eth.o)
+ .rodata        0x00000000bf02e0d0       0x40 net/libnet.a(nfs.o)
+ .rodata        0x00000000bf02e110       0x20 net/libnet.a(nmrp.o)
+ .rodata        0x00000000bf02e130       0x30 rtc/librtc.a(date.o)
+ .rodata        0x00000000bf02e160      0x400 lib_generic/libgeneric.a(crc32.o)
+ .rodata        0x00000000bf02e560       0x80 lib_generic/libgeneric.a(zlib.o)
+ .rodata        0x00000000bf02e5e0       0x10 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128_pci.o)
+ .rodata        0x00000000bf02e5f0       0x30 cpu/mips/ar7100/libar7100.a(ag7100.o)
+
+.reginfo        0x00000000bf02e620       0x18
+ .reginfo       0x00000000bf02e620       0x18 cpu/mips/start.o
+
+.rodata.str1.4  0x00000000bf02e638     0x82db
+ .rodata.str1.4
+                0x00000000bf02e638      0x10e common/libcommon.a(cmd_autoscript.o)
+                                        0x110 (size before relaxing)
+ *fill*         0x00000000bf02e746        0x2 00
+ .rodata.str1.4
+                0x00000000bf02e748      0x137 common/libcommon.a(cmd_boot.o)
+                                        0x138 (size before relaxing)
+ *fill*         0x00000000bf02e87f        0x1 00
+ .rodata.str1.4
+                0x00000000bf02e880      0x942 common/libcommon.a(cmd_bootm.o)
+                                        0x95c (size before relaxing)
+ *fill*         0x00000000bf02f1c2        0x2 00
+ .rodata.str1.4
+                0x00000000bf02f1c4       0x70 common/libcommon.a(cmd_console.o)
+                                         0x74 (size before relaxing)
+ .rodata.str1.4
+                0x00000000bf02f234      0x2d7 common/libcommon.a(cmd_elf.o)
+                                        0x2f0 (size before relaxing)
+ *fill*         0x00000000bf02f50b        0x1 00
+ .rodata.str1.4
+                0x00000000bf02f50c      0x7cb common/libcommon.a(cmd_flash.o)
+                                        0x7e0 (size before relaxing)
+ *fill*         0x00000000bf02fcd7        0x1 00
+ .rodata.str1.4
+                0x00000000bf02fcd8       0xca common/libcommon.a(cmd_itest.o)
+                                         0xdc (size before relaxing)
+ *fill*         0x00000000bf02fda2        0x2 00
+ .rodata.str1.4
+                0x00000000bf02fda4      0x337 common/libcommon.a(cmd_jffs2.o)
+                                        0x348 (size before relaxing)
+ *fill*         0x00000000bf0300db        0x1 00
+ .rodata.str1.4
+                0x00000000bf0300dc      0x378 common/libcommon.a(cmd_load.o)
+                                        0x398 (size before relaxing)
+ .rodata.str1.4
+                0x00000000bf030454      0x621 common/libcommon.a(cmd_mem.o)
+                                        0x648 (size before relaxing)
+ *fill*         0x00000000bf030a75        0x3 00
+ .rodata.str1.4
+                0x00000000bf030a78     0x1427 common/libcommon.a(cmd_mii.o)
+                                       0x144c (size before relaxing)
+ *fill*         0x00000000bf031e9f        0x1 00
+ .rodata.str1.4
+                0x00000000bf031ea0       0x70 common/libcommon.a(cmd_misc.o)
+                                         0x7c (size before relaxing)
+ .rodata.str1.4
+                0x00000000bf031f10      0x256 common/libcommon.a(cmd_net.o)
+                                        0x27c (size before relaxing)
+ *fill*         0x00000000bf032166        0x2 00
+ .rodata.str1.4
+                0x00000000bf032168      0x339 common/libcommon.a(cmd_nvedit.o)
+                                        0x3a4 (size before relaxing)
+ *fill*         0x00000000bf0324a1        0x3 00
+ .rodata.str1.4
+                0x00000000bf0324a4      0xddf common/libcommon.a(cmd_pci.o)
+                                        0xe18 (size before relaxing)
+ *fill*         0x00000000bf033283        0x1 00
+ .rodata.str1.4
+                0x00000000bf033284      0x417 common/libcommon.a(command.o)
+                                        0x46c (size before relaxing)
+ *fill*         0x00000000bf03369b        0x1 00
+ .rodata.str1.4
+                0x00000000bf03369c       0x75 common/libcommon.a(console.o)
+                                         0x7c (size before relaxing)
+ *fill*         0x00000000bf033711        0x3 00
+ .rodata.str1.4
+                0x00000000bf033714       0x2f common/libcommon.a(devices.o)
+                                         0x48 (size before relaxing)
+ *fill*         0x00000000bf033743        0x1 00
+ .rodata.str1.4
+                0x00000000bf033744       0x33 common/libcommon.a(env_common.o)
+                                         0x34 (size before relaxing)
+ *fill*         0x00000000bf033777        0x1 00
+ .rodata.str1.4
+                0x00000000bf033778       0x51 common/libcommon.a(env_flash.o)
+                                         0x5c (size before relaxing)
+ *fill*         0x00000000bf0337c9        0x3 00
+ .rodata.str1.4
+                0x00000000bf0337cc      0x171 common/libcommon.a(flash.o)
+                                        0x178 (size before relaxing)
+ *fill*         0x00000000bf03393d        0x3 00
+ .rodata.str1.4
+                0x00000000bf033940      0x1d5 common/libcommon.a(hush.o)
+                                        0x1f4 (size before relaxing)
+ *fill*         0x00000000bf033b15        0x3 00
+ .rodata.str1.4
+                0x00000000bf033b18      0x284 common/libcommon.a(miiphyutil.o)
+                                        0x288 (size before relaxing)
+ .rodata.str1.4
+                0x00000000bf033d9c      0x241 common/libcommon.a(xyzModem.o)
+                                        0x24c (size before relaxing)
+ *fill*         0x00000000bf033fdd        0x3 00
+ .rodata.str1.4
+                0x00000000bf033fe0       0x83 common/libcommon.a(main.o)
+                                        0x158 (size before relaxing)
+ *fill*         0x00000000bf034063        0x1 00
+ .rodata.str1.4
+                0x00000000bf034064       0x74 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(ar7100_flash.o)
+                                         0x78 (size before relaxing)
+ .rodata.str1.4
+                0x00000000bf0340d8      0x427 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128.o)
+                                        0x434 (size before relaxing)
+ *fill*         0x00000000bf0344ff        0x1 00
+ .rodata.str1.4
+                0x00000000bf034500       0x58 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(rtl8366s_phy.o)
+ .rodata.str1.4
+                0x00000000bf034558        0xf cpu/mips/libmips.a(cpu.o)
+                                         0x10 (size before relaxing)
+ *fill*         0x00000000bf034567        0x1 00
+ .rodata.str1.4
+                0x00000000bf034568       0xc2 cpu/mips/ar7100/libar7100.a(meminit.o)
+                                         0xc4 (size before relaxing)
+ *fill*         0x00000000bf03462a        0x2 00
+ .rodata.str1.4
+                0x00000000bf03462c      0x205 lib_mips/libmips.a(board.o)
+                                        0x240 (size before relaxing)
+ *fill*         0x00000000bf034831        0x3 00
+ .rodata.str1.4
+                0x00000000bf034834      0x127 lib_mips/libmips.a(mips_linux.o)
+                                        0x194 (size before relaxing)
+ *fill*         0x00000000bf03495b        0x1 00
+ .rodata.str1.4
+                0x00000000bf03495c      0x1ac fs/cramfs/libcramfs.a(cramfs.o)
+                                        0x1b4 (size before relaxing)
+ .rodata.str1.4
+                0x00000000bf034b08        0x0 fs/cramfs/libcramfs.a(uncompress.o)
+                                         0x24 (size before relaxing)
+ .rodata.str1.4
+                0x00000000bf034b08      0x36b fs/jffs2/libjffs2.a(jffs2_1pass.o)
+                                        0x388 (size before relaxing)
+ *fill*         0x00000000bf034e73        0x1 00
+ .rodata.str1.4
+                0x00000000bf034e74      0x54b fs/squashfs/libsquashfs.a(squashfs.o)
+                                        0x554 (size before relaxing)
+ *fill*         0x00000000bf0353bf        0x1 00
+ .rodata.str1.4
+                0x00000000bf0353c0       0x4f fs/squashfs/libsquashfs.a(uncompress.o)
+                                         0x50 (size before relaxing)
+ *fill*         0x00000000bf03540f        0x1 00
+ .rodata.str1.4
+                0x00000000bf035410       0xe4 drivers/libdrivers.a(pci.o)
+ .rodata.str1.4
+                0x00000000bf0354f4      0x482 net/libnet.a(net.o)
+                                        0x4e0 (size before relaxing)
+ *fill*         0x00000000bf035976        0x2 00
+ .rodata.str1.4
+                0x00000000bf035978      0x371 net/libnet.a(tftp.o)
+                                        0x398 (size before relaxing)
+ *fill*         0x00000000bf035ce9        0x3 00
+ .rodata.str1.4
+                0x00000000bf035cec       0xf0 net/libnet.a(bootp.o)
+                                        0x124 (size before relaxing)
+ .rodata.str1.4
+                0x00000000bf035ddc       0x23 net/libnet.a(rarp.o)
+                                         0x5c (size before relaxing)
+ *fill*         0x00000000bf035dff        0x1 00
+ .rodata.str1.4
+                0x00000000bf035e00      0x178 net/libnet.a(eth.o)
+                                        0x18c (size before relaxing)
+ .rodata.str1.4
+                0x00000000bf035f78       0xfd net/libnet.a(nfs.o)
+                                        0x1a0 (size before relaxing)
+ *fill*         0x00000000bf036075        0x3 00
+ .rodata.str1.4
+                0x00000000bf036078      0x2a6 net/libnet.a(nmrp.o)
+                                        0x2b0 (size before relaxing)
+ *fill*         0x00000000bf03631e        0x2 00
+ .rodata.str1.4
+                0x00000000bf036320       0x17 lib_generic/libgeneric.a(display_options.o)
+                                         0x20 (size before relaxing)
+ *fill*         0x00000000bf036337        0x1 00
+ .rodata.str1.4
+                0x00000000bf036338       0x57 lib_generic/libgeneric.a(vsprintf.o)
+                                         0x58 (size before relaxing)
+ *fill*         0x00000000bf03638f        0x1 00
+ .rodata.str1.4
+                0x00000000bf036390      0x20d lib_generic/libgeneric.a(zlib.o)
+                                        0x214 (size before relaxing)
+ *fill*         0x00000000bf03659d        0x3 00
+ .rodata.str1.4
+                0x00000000bf0365a0       0xb2 lib_generic/libgeneric.a(LzmaDecode.o)
+                                         0xb8 (size before relaxing)
+ *fill*         0x00000000bf036652        0x2 00
+ .rodata.str1.4
+                0x00000000bf036654       0x78 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128_pci.o)
+ .rodata.str1.4
+                0x00000000bf0366cc      0x247 cpu/mips/ar7100/libar7100.a(ag7100.o)
+                                        0x250 (size before relaxing)
+                0x00000000bf036914                . = ALIGN (0x4)
+
+.data           0x00000000bf036920      0x670
+ *(.data)
+ .data          0x00000000bf036920       0x10 common/libcommon.a(cmd_bootm.o)
+                0x00000000bf036920                load_addr
+ .data          0x00000000bf036930       0x10 common/libcommon.a(cmd_load.o)
+ .data          0x00000000bf036940       0x10 common/libcommon.a(cmd_mem.o)
+                0x00000000bf036940                dp_last_length
+ .data          0x00000000bf036950       0x10 common/libcommon.a(cmd_pci.o)
+                0x00000000bf036950                ShortPCIListing
+ .data          0x00000000bf036960       0x10 common/libcommon.a(dlmalloc.o)
+ .data          0x00000000bf036970      0x140 common/libcommon.a(env_common.o)
+                0x00000000bf036970                default_environment
+ .data          0x00000000bf036ab0       0x10 common/libcommon.a(env_flash.o)
+                0x00000000bf036ab0                env_ptr
+ .data          0x00000000bf036ac0       0x30 common/libcommon.a(hush.o)
+ .data          0x00000000bf036af0       0x10 common/libcommon.a(xyzModem.o)
+ .data          0x00000000bf036b00       0x10 common/libcommon.a(main.o)
+ .data          0x00000000bf036b10       0x10 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128.o)
+ .data          0x00000000bf036b20       0x20 cpu/mips/ar7100/libar7100.a(meminit.o)
+                0x00000000bf036b28                tap_settings
+                0x00000000bf036b20                tap_pattern
+ .data          0x00000000bf036b40       0x10 fs/jffs2/libjffs2.a(jffs2_1pass.o)
+ .data          0x00000000bf036b50       0x20 fs/jffs2/libjffs2.a(mini_inflate.o)
+ .data          0x00000000bf036b70       0x10 net/libnet.a(net.o)
+                0x00000000bf036b70                NetOurTftpIP
+                0x00000000bf036b78                NetBcastAddr
+                0x00000000bf036b74                NetOurNativeVLAN
+                0x00000000bf036b76                NetOurVLAN
+ .data          0x00000000bf036b80       0x10 net/libnet.a(tftp.o)
+                0x00000000bf036b80                TestNmrpIP
+ .data          0x00000000bf036b90       0x10 net/libnet.a(nfs.o)
+ .data          0x00000000bf036ba0       0x10 net/libnet.a(nmrp.o)
+                0x00000000bf036ba0                NmrpAliveTimerTimeout
+ .data          0x00000000bf036bb0       0x30 rtc/librtc.a(date.o)
+ .data          0x00000000bf036be0      0x100 lib_generic/libgeneric.a(ctype.o)
+                0x00000000bf036be0                _ctype
+ .data          0x00000000bf036ce0      0x280 lib_generic/libgeneric.a(zlib.o)
+ .data          0x00000000bf036f60       0x20 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128_pci.o)
+ .data          0x00000000bf036f80       0x10 cpu/mips/ar7100/libar7100.a(ag7100.o)
+                0x00000000bf036f80                fifo_5
+                0x00000000bf036f84                gige_pll
+                0x00000000bf036f88                fifo_3
+
+.data.rel.local
+                0x00000000bf036f90      0x83c
+ .data.rel.local
+                0x00000000bf036f90       0x68 common/libcommon.a(cmd_itest.o)
+                0x00000000bf036f90                op_table
+ .data.rel.local
+                0x00000000bf036ff8      0x2b8 common/libcommon.a(cmd_mii.o)
+                0x00000000bf037118                reg_3_desc_tbl
+                0x00000000bf037208                reg_0_desc_tbl
+                0x00000000bf037088                reg_4_desc_tbl
+                0x00000000bf037280                reg_0_5_desc_tbl
+                0x00000000bf036ff8                reg_5_desc_tbl
+                0x00000000bf037148                reg_1_desc_tbl
+                0x00000000bf03713c                reg_2_desc_tbl
+ .data.rel.local
+                0x00000000bf0372b0        0xc common/libcommon.a(devices.o)
+                0x00000000bf0372b0                stdio_names
+ .data.rel.local
+                0x00000000bf0372bc      0x408 common/libcommon.a(dlmalloc.o)
+ .data.rel.local
+                0x00000000bf0376c4        0x4 common/libcommon.a(env_common.o)
+                0x00000000bf0376c4                env_get_char
+ .data.rel.local
+                0x00000000bf0376c8        0x4 common/libcommon.a(env_flash.o)
+                0x00000000bf0376c8                env_name_spec
+ .data.rel.local
+                0x00000000bf0376cc       0x84 common/libcommon.a(hush.o)
+ .data.rel.local
+                0x00000000bf037750        0x4 lib_mips/libmips.a(board.o)
+ .data.rel.local
+                0x00000000bf037754       0x20 fs/jffs2/libjffs2.a(jffs2_1pass.o)
+ .data.rel.local
+                0x00000000bf037774       0x24 lib_generic/libgeneric.a(zlib.o)
+                0x00000000bf037794                zlib_version
+                0x00000000bf037774                z_errmsg
+ .data.rel.local
+                0x00000000bf037798       0x34 cpu/mips/ar7100/libar7100.a(ag7100.o)
+                0x00000000bf037798                dup_str
+                0x00000000bf0377ac                mii_str
+                0x00000000bf0377a0                spd_str
+
+.data.rel       0x00000000bf0377cc       0x54
+ .data.rel      0x00000000bf0377cc       0x30 common/libcommon.a(cmd_mii.o)
+                0x00000000bf0377cc                desc_and_len_tbl
+ .data.rel      0x00000000bf0377fc       0x24 lib_mips/libmips.a(board.o)
+                0x00000000bf0377fc                init_sequence
+                0x00000000bf037820                . = ALIGN (0x4)
+
+.sdata
+ *(.sdata)
+ *(.sdata)
+                0x00000000bf037820                _gp = ALIGN (0x10)
+                0x00000000bf037820                __got_start = .
+
+.got            0x00000000bf037820      0x820
+ *(.got)
+ .got           0x00000000bf037820      0x820 cpu/mips/start.o
+                0x00000000bf037820                _GLOBAL_OFFSET_TABLE_
+                0x00000000bf038040                __got_end = .
+                0x00000000bf038040                __u_boot_cmd_start = .
+
+.u_boot_cmd     0x00000000bf038040      0x618
+ *(.u_boot_cmd)
+ .u_boot_cmd    0x00000000bf038040       0x18 common/libcommon.a(cmd_autoscript.o)
+                0x00000000bf038040                __u_boot_cmd_autoscr
+ .u_boot_cmd    0x00000000bf038058       0x30 common/libcommon.a(cmd_boot.o)
+                0x00000000bf038058                __u_boot_cmd_reset
+                0x00000000bf038070                __u_boot_cmd_go
+ .u_boot_cmd    0x00000000bf038088       0x78 common/libcommon.a(cmd_bootm.o)
+                0x00000000bf0380e8                __u_boot_cmd_bootm
+                0x00000000bf0380a0                __u_boot_cmd_iminfo
+                0x00000000bf0380b8                __u_boot_cmd_bootd
+                0x00000000bf0380d0                __u_boot_cmd_boot
+                0x00000000bf038088                __u_boot_cmd_imls
+ .u_boot_cmd    0x00000000bf038100       0x18 common/libcommon.a(cmd_console.o)
+                0x00000000bf038100                __u_boot_cmd_coninfo
+ .u_boot_cmd    0x00000000bf038118       0x30 common/libcommon.a(cmd_elf.o)
+                0x00000000bf038118                __u_boot_cmd_bootvx
+                0x00000000bf038130                __u_boot_cmd_bootelf
+ .u_boot_cmd    0x00000000bf038148       0x48 common/libcommon.a(cmd_flash.o)
+                0x00000000bf038178                __u_boot_cmd_flinfo
+                0x00000000bf038148                __u_boot_cmd_erase
+                0x00000000bf038160                __u_boot_cmd_protect
+ .u_boot_cmd    0x00000000bf038190       0x18 common/libcommon.a(cmd_itest.o)
+                0x00000000bf038190                __u_boot_cmd_itest
+ .u_boot_cmd    0x00000000bf0381a8       0x48 common/libcommon.a(cmd_jffs2.o)
+                0x00000000bf0381a8                __u_boot_cmd_fsinfo
+                0x00000000bf0381d8                __u_boot_cmd_fsload
+                0x00000000bf0381c0                __u_boot_cmd_ls
+ .u_boot_cmd    0x00000000bf0381f0       0x48 common/libcommon.a(cmd_load.o)
+                0x00000000bf0381f0                __u_boot_cmd_loady
+                0x00000000bf038208                __u_boot_cmd_loadb
+                0x00000000bf038220                __u_boot_cmd_loads
+ .u_boot_cmd    0x00000000bf038238       0xf0 common/libcommon.a(cmd_mem.o)
+                0x00000000bf0382b0                __u_boot_cmd_md
+                0x00000000bf038310                __u_boot_cmd_cmp
+                0x00000000bf038268                __u_boot_cmd_mw
+                0x00000000bf0382c8                __u_boot_cmd_loop
+                0x00000000bf0382e0                __u_boot_cmd_base
+                0x00000000bf038298                __u_boot_cmd_mm
+                0x00000000bf0382f8                __u_boot_cmd_crc32
+                0x00000000bf038280                __u_boot_cmd_nm
+                0x00000000bf038250                __u_boot_cmd_mtest
+                0x00000000bf038238                __u_boot_cmd_cp
+ .u_boot_cmd    0x00000000bf038328      0x180 common/libcommon.a(cmd_mii.o)
+                0x00000000bf038460                __u_boot_cmd_macset
+                0x00000000bf0383a0                __u_boot_cmd_board_model_id_set
+                0x00000000bf038388                __u_boot_cmd_board_model_id_show
+                0x00000000bf038370                __u_boot_cmd_board_ssid_set
+                0x00000000bf0383e8                __u_boot_cmd_rnshow
+                0x00000000bf038430                __u_boot_cmd_wpspinset
+                0x00000000bf038418                __u_boot_cmd_snset
+                0x00000000bf038328                __u_boot_cmd_board_passphrase_show
+                0x00000000bf038400                __u_boot_cmd_rnset
+                0x00000000bf038490                __u_boot_cmd_mii
+                0x00000000bf038340                __u_boot_cmd_board_passphrase_set
+                0x00000000bf0383b8                __u_boot_cmd_board_hw_id_show
+                0x00000000bf0383d0                __u_boot_cmd_board_hw_id_set
+                0x00000000bf038358                __u_boot_cmd_board_ssid_show
+                0x00000000bf038448                __u_boot_cmd_macshow
+                0x00000000bf038478                __u_boot_cmd_progmac
+ .u_boot_cmd    0x00000000bf0384a8       0x18 common/libcommon.a(cmd_misc.o)
+                0x00000000bf0384a8                __u_boot_cmd_sleep
+ .u_boot_cmd    0x00000000bf0384c0       0x78 common/libcommon.a(cmd_net.o)
+                0x00000000bf0384d8                __u_boot_cmd_nfs
+                0x00000000bf0384c0                __u_boot_cmd_ping
+                0x00000000bf038508                __u_boot_cmd_rarpboot
+                0x00000000bf0384f0                __u_boot_cmd_tftpboot
+                0x00000000bf038520                __u_boot_cmd_bootp
+ .u_boot_cmd    0x00000000bf038538       0x60 common/libcommon.a(cmd_nvedit.o)
+                0x00000000bf038538                __u_boot_cmd_run
+                0x00000000bf038550                __u_boot_cmd_saveenv
+                0x00000000bf038580                __u_boot_cmd_printenv
+                0x00000000bf038568                __u_boot_cmd_setenv
+ .u_boot_cmd    0x00000000bf038598       0x18 common/libcommon.a(cmd_pci.o)
+                0x00000000bf038598                __u_boot_cmd_pci
+ .u_boot_cmd    0x00000000bf0385b0       0xa8 common/libcommon.a(command.o)
+                0x00000000bf0385f8                __u_boot_cmd_exit
+                0x00000000bf038628                __u_boot_cmd_echo
+                0x00000000bf0385c8                __u_boot_cmd_question_mark
+                0x00000000bf038640                __u_boot_cmd_version
+                0x00000000bf0385b0                __u_boot_cmd_dnishow
+                0x00000000bf0385e0                __u_boot_cmd_help
+                0x00000000bf038610                __u_boot_cmd_test
+                0x00000000bf038658                __u_boot_cmd_end = .
+                0x00000000bf038658                uboot_end_data = .
+                0x0000000000000208                num_got_entries = ((__got_end - __got_start) >> 0x2)
+                0x00000000bf038658                . = ALIGN (0x4)
+
+.sbss
+ *(.sbss)
+
+.bss            0x00000000bf038660     0xa05c
+ *(.bss)
+ .bss           0x00000000bf038660       0x10 common/libcommon.a(cmd_jffs2.o)
+ .bss           0x00000000bf038670       0x40 common/libcommon.a(cmd_load.o)
+ .bss           0x00000000bf0386b0       0x10 common/libcommon.a(cmd_mem.o)
+ .bss           0x00000000bf0386c0       0x10 common/libcommon.a(console.o)
+ .bss           0x00000000bf0386d0       0x10 common/libcommon.a(devices.o)
+                0x00000000bf0386dc                devlist
+                0x00000000bf0386d0                stdio_devices
+ .bss           0x00000000bf0386e0       0x40 common/libcommon.a(dlmalloc.o)
+ .bss           0x00000000bf038720      0x250 common/libcommon.a(hush.o)
+ .bss           0x00000000bf038970       0x10 common/libcommon.a(miiphyutil.o)
+ .bss           0x00000000bf038980      0xc40 common/libcommon.a(xyzModem.o)
+ .bss           0x00000000bf0395c0       0x10 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(rtl8366s_phy.o)
+ .bss           0x00000000bf0395d0       0x10 lib_mips/libmips.a(board.o)
+ .bss           0x00000000bf0395e0       0x20 lib_mips/libmips.a(mips_linux.o)
+ .bss           0x00000000bf039600       0x40 fs/cramfs/libcramfs.a(uncompress.o)
+ .bss           0x00000000bf039640       0x10 fs/jffs2/libjffs2.a(jffs2_1pass.o)
+ .bss           0x00000000bf039650       0x10 fs/squashfs/libsquashfs.a(uncompress.o)
+ .bss           0x00000000bf039660       0x20 drivers/libdrivers.a(pci.o)
+ .bss           0x00000000bf039680       0xd0 net/libnet.a(net.o)
+                0x00000000bf039708                NetOurNISDomain
+                0x00000000bf0396a0                NetServerEther
+                0x00000000bf039730                NetOurSubnetMask
+                0x00000000bf0396a6                NetBootFileSize
+                0x00000000bf0396e8                NetOurHostName
+                0x00000000bf03972c                NetOurGatewayIP
+                0x00000000bf039698                NetEtherNullAddr
+                0x00000000bf039694                NetRestartWrap
+                0x00000000bf039688                TftpClientEther
+                0x00000000bf039680                NetTxPacket
+                0x00000000bf039728                NetOurDNSIP
+                0x00000000bf039690                NetRunTftpServer
+                0x00000000bf0396a8                NetOurRootPath
+                0x00000000bf039684                TftpClientIP
+ .bss           0x00000000bf039750       0x50 net/libnet.a(tftp.o)
+ .bss           0x00000000bf0397a0       0x10 net/libnet.a(eth.o)
+ .bss           0x00000000bf0397b0      0x8b0 net/libnet.a(nfs.o)
+ .bss           0x00000000bf03a060      0x100 net/libnet.a(nmrp.o)
+                0x00000000bf03a09c                NmrpSTUPOption
+                0x00000000bf03a068                NmrpAliveTimerBase
+                0x00000000bf03a08c                Nmrp_active_start
+                0x00000000bf03a094                NmrpStringTableUpdateIndex
+                0x00000000bf03a060                overflow_count
+                0x00000000bf03a084                Nmrp_REQ_TimeoutCount
+                0x00000000bf03a098                NmrpStringTableUpdateCount
+                0x00000000bf03a06c                NmrpAliveTimerStart
+                0x00000000bf03a064                NmrpAliveWaitACK
+                0x00000000bf03a0a0                NmrpFwUPOption
+                0x00000000bf03a088                Nmrp_Listen_TimeoutCount
+                0x00000000bf03a078                NmrpClientEther
+                0x00000000bf03a090                NmrpState
+                0x00000000bf03a070                NmrpServerEther
+                0x00000000bf03a080                NmrpClientIP
+ .bss           0x00000000bf03a160     0x10b0 lib_generic/libgeneric.a(zlib.o)
+ .bss           0x00000000bf03b210       0xe0 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128_pci.o)
+ COMMON         0x00000000bf03b2f0       0x40 common/libcommon.a(cmd_bootm.o)
+                0x00000000bf03b2f0                header
+ COMMON         0x00000000bf03b330       0x34 common/libcommon.a(cmd_load.o)
+                0x00000000bf03b330                os_data_header
+                0x00000000bf03b350                send_parms
+ COMMON         0x00000000bf03b364      0x100 common/libcommon.a(main.o)
+                0x00000000bf03b364                console_buffer
+ COMMON         0x00000000bf03b464      0x50c board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(ar7100_flash.o)
+                0x00000000bf03b464                flash_info
+ COMMON         0x00000000bf03b970       0x4c fs/cramfs/libcramfs.a(cramfs.o)
+                0x00000000bf03b970                super
+ COMMON         0x00000000bf03b9bc     0x6d00 net/libnet.a(net.o)
+                0x00000000bf03b9bc                NetRxPackets
+                0x00000000bf03b9fc                BootFile
+                0x00000000bf03ba7c                NetArpWaitPacketBuf
+                0x00000000bf03c09c                PktBuf
+                0x00000000bf0426bc                uboot_end = .
+
+.scommon        0x00000000bf0426bc       0xd4
+ .scommon       0x00000000bf0426bc       0x1c common/libcommon.a(cmd_load.o)
+                0x00000000bf0426bc                his_pad_char
+                0x00000000bf0426c0                os_data_count
+                0x00000000bf0426c4                os_data_init
+                0x00000000bf0426c8                send_ptr
+                0x00000000bf0426cc                os_data_char
+                0x00000000bf0426d0                his_eol
+                0x00000000bf0426d1                his_quote
+                0x00000000bf0426d4                his_pad_count
+ .scommon       0x00000000bf0426d8       0x10 common/libcommon.a(cmd_mem.o)
+                0x00000000bf0426d8                dp_last_size
+                0x00000000bf0426dc                dp_last_addr
+                0x00000000bf0426e0                mm_last_size
+                0x00000000bf0426e4                mm_last_addr
+ .scommon       0x00000000bf0426e8       0x18 common/libcommon.a(cmd_mii.o)
+                0x00000000bf0426e8                last_reg_hi
+                0x00000000bf0426ec                last_data
+                0x00000000bf0426f0                last_addr_hi
+                0x00000000bf0426f4                last_reg_lo
+                0x00000000bf0426f8                last_op
+                0x00000000bf0426fc                last_addr_lo
+ .scommon       0x00000000bf042700        0x8 common/libcommon.a(hush.o)
+                0x00000000bf042700                nesting_level
+                0x00000000bf042704                last_return_code
+ .scommon       0x00000000bf042708        0x4 lib_mips/libmips.a(board.o)
+                0x00000000bf042708                monitor_flash_len
+ .scommon       0x00000000bf04270c        0x4 fs/squashfs/libsquashfs.a(squashfs.o)
+                0x00000000bf04270c                uncompr_size
+ .scommon       0x00000000bf042710       0x5c net/libnet.a(net.o)
+                0x00000000bf042710                NetArpWaitTry
+                0x00000000bf042714                NetArpWaitPacketMAC
+                0x00000000bf042718                NetOurEther
+                0x00000000bf042720                NetOurIP
+                0x00000000bf042724                NetPingIP
+                0x00000000bf042728                NetServerIP
+                0x00000000bf04272c                NetArpWaitTxPacketSize
+                0x00000000bf042730                NetArpWaitReplyIP
+                0x00000000bf042734                NetArpWaitTxPacket
+                0x00000000bf042738                NetArpWaitPacketIP
+                0x00000000bf04273c                NetOurPingIP
+                0x00000000bf042740                NetState
+                0x00000000bf042744                timeDelta
+                0x00000000bf042748                NetPingEther
+                0x00000000bf042750                NetIPID
+                0x00000000bf042754                timeHandler
+                0x00000000bf042758                NetRxPkt
+                0x00000000bf04275c                timeStart
+                0x00000000bf042760                NetRxPktLen
+                0x00000000bf042764                NetBootFileXferSize
+                0x00000000bf042768                NetArpWaitTimerStart
+ .scommon       0x00000000bf04276c        0x8 net/libnet.a(bootp.o)
+                0x00000000bf04276c                BootpTry
+                0x00000000bf042770                BootpID
+ .scommon       0x00000000bf042774        0x4 net/libnet.a(rarp.o)
+                0x00000000bf042774                RarpTry
+ .scommon       0x00000000bf042778        0xc net/libnet.a(nmrp.o)
+                0x00000000bf042778                NmrpFwOption
+                0x00000000bf04277c                NmrpOuripaddr
+                0x00000000bf042780                NmrpOuripSubnetMask
+ .scommon       0x00000000bf042784        0x4 lib_generic/libgeneric.a(string.o)
+                0x00000000bf042784                ___strtok
+ .scommon       0x00000000bf042788        0x8 cpu/mips/ar7100/libar7100.a(ag7100.o)
+                0x00000000bf042788                ag7100_macs
+
+.rel.dyn
+Address of section .text set to 0xbf000000
+LOAD cpu/mips/start.o
+START GROUP
+LOAD lib_generic/libgeneric.a
+LOAD common/libcommon.a
+LOAD board/ar7100/hw29763654p16p128/libhw29763654p16p128.a
+LOAD cpu/mips/libmips.a
+LOAD cpu/mips/ar7100/libar7100.a
+LOAD lib_mips/libmips.a
+LOAD fs/cramfs/libcramfs.a
+LOAD fs/fat/libfat.a
+LOAD fs/fdos/libfdos.a
+LOAD fs/jffs2/libjffs2.a
+LOAD fs/reiserfs/libreiserfs.a
+LOAD fs/ext2/libext2fs.a
+LOAD fs/squashfs/libsquashfs.a
+LOAD disk/libdisk.a
+LOAD dtt/libdtt.a
+LOAD drivers/libdrivers.a
+LOAD drivers/sk98lin/libsk98lin.a
+LOAD net/libnet.a
+LOAD rtc/librtc.a
+LOAD post/libpost.a
+LOAD post/cpu/libcpu.a
+END GROUP
+LOAD /home/vvgao/repo/mips-toolchain/bin/../lib/gcc/mips-linux-uclibc/3.4.4/libgcc.a
+OUTPUT(u-boot elf32-tradbigmips)
+
+.pdr            0x0000000000000000     0x4780
+ .pdr           0x0000000000000000       0x20 cpu/mips/start.o
+ .pdr           0x0000000000000020       0x40 common/libcommon.a(cmd_autoscript.o)
+ .pdr           0x0000000000000060       0x20 common/libcommon.a(cmd_boot.o)
+ .pdr           0x0000000000000080      0x120 common/libcommon.a(cmd_bootm.o)
+ .pdr           0x00000000000001a0       0x20 common/libcommon.a(cmd_console.o)
+ .pdr           0x00000000000001c0       0x80 common/libcommon.a(cmd_elf.o)
+ .pdr           0x0000000000000240      0x100 common/libcommon.a(cmd_flash.o)
+ .pdr           0x0000000000000340       0x80 common/libcommon.a(cmd_itest.o)
+ .pdr           0x00000000000003c0       0xc0 common/libcommon.a(cmd_jffs2.o)
+ .pdr           0x0000000000000480      0x200 common/libcommon.a(cmd_load.o)
+ .pdr           0x0000000000000680      0x180 common/libcommon.a(cmd_mem.o)
+ .pdr           0x0000000000000800      0x320 common/libcommon.a(cmd_mii.o)
+ .pdr           0x0000000000000b20       0x20 common/libcommon.a(cmd_misc.o)
+ .pdr           0x0000000000000b40       0xc0 common/libcommon.a(cmd_net.o)
+ .pdr           0x0000000000000c00      0x100 common/libcommon.a(cmd_nvedit.o)
+ .pdr           0x0000000000000d00       0xe0 common/libcommon.a(cmd_pci.o)
+ .pdr           0x0000000000000de0       0xe0 common/libcommon.a(command.o)
+ .pdr           0x0000000000000ec0      0x2a0 common/libcommon.a(console.o)
+ .pdr           0x0000000000001160       0x60 common/libcommon.a(devices.o)
+ .pdr           0x00000000000011c0      0x200 common/libcommon.a(dlmalloc.o)
+ .pdr           0x00000000000013c0       0xa0 common/libcommon.a(env_common.o)
+ .pdr           0x0000000000001460       0x80 common/libcommon.a(env_flash.o)
+ .pdr           0x00000000000014e0       0x80 common/libcommon.a(flash.o)
+ .pdr           0x0000000000001560      0x3e0 common/libcommon.a(hush.o)
+ .pdr           0x0000000000001940      0x1c0 common/libcommon.a(lists.o)
+ .pdr           0x0000000000001b00      0x180 common/libcommon.a(miiphyutil.o)
+ .pdr           0x0000000000001c80       0x60 common/libcommon.a(s_record.o)
+ .pdr           0x0000000000001ce0      0x1e0 common/libcommon.a(xyzModem.o)
+ .pdr           0x0000000000001ec0       0xa0 common/libcommon.a(main.o)
+ .pdr           0x0000000000001f60       0x20 common/libcommon.a(crc16.o)
+ .pdr           0x0000000000001f80       0xc0 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(ar7100_flash.o)
+ .pdr           0x0000000000002040      0x1e0 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128.o)
+ .pdr           0x0000000000002220      0x220 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(rtl8366s_phy.o)
+ .pdr           0x0000000000002440       0x60 cpu/mips/libmips.a(cpu.o)
+ .pdr           0x00000000000024a0       0x40 cpu/mips/libmips.a(interrupts.o)
+ .pdr           0x00000000000024e0      0x100 cpu/mips/libmips.a(cache.o)
+ .pdr           0x00000000000025e0       0xe0 cpu/mips/ar7100/libar7100.a(ar7100_serial.o)
+ .pdr           0x00000000000026c0       0xc0 cpu/mips/ar7100/libar7100.a(meminit.o)
+ .pdr           0x0000000000002780      0x120 lib_mips/libmips.a(board.o)
+ .pdr           0x00000000000028a0       0xe0 lib_mips/libmips.a(time.o)
+ .pdr           0x0000000000002980       0x40 lib_mips/libmips.a(mips_linux.o)
+ .pdr           0x00000000000029c0      0x100 fs/cramfs/libcramfs.a(cramfs.o)
+ .pdr           0x0000000000002ac0       0xa0 fs/cramfs/libcramfs.a(uncompress.o)
+ .pdr           0x0000000000002b60      0x180 fs/jffs2/libjffs2.a(jffs2_1pass.o)
+ .pdr           0x0000000000002ce0       0x20 fs/jffs2/libjffs2.a(compr_rtime.o)
+ .pdr           0x0000000000002d00       0x40 fs/jffs2/libjffs2.a(compr_rubin.o)
+ .pdr           0x0000000000002d40       0x20 fs/jffs2/libjffs2.a(compr_zlib.o)
+ .pdr           0x0000000000002d60      0x100 fs/jffs2/libjffs2.a(mini_inflate.o)
+ .pdr           0x0000000000002e60      0x140 fs/squashfs/libsquashfs.a(squashfs.o)
+ .pdr           0x0000000000002fa0       0x60 fs/squashfs/libsquashfs.a(uncompress.o)
+ .pdr           0x0000000000003000      0x3a0 drivers/libdrivers.a(pci.o)
+ .pdr           0x00000000000033a0      0x480 net/libnet.a(net.o)
+ .pdr           0x0000000000003820       0xe0 net/libnet.a(tftp.o)
+ .pdr           0x0000000000003900       0x80 net/libnet.a(bootp.o)
+ .pdr           0x0000000000003980       0x60 net/libnet.a(rarp.o)
+ .pdr           0x00000000000039e0      0x1a0 net/libnet.a(eth.o)
+ .pdr           0x0000000000003b80      0x140 net/libnet.a(nfs.o)
+ .pdr           0x0000000000003cc0      0x140 net/libnet.a(nmrp.o)
+ .pdr           0x0000000000003e00       0x60 rtc/librtc.a(date.o)
+ .pdr           0x0000000000003e60       0x40 lib_generic/libgeneric.a(crc32.o)
+ .pdr           0x0000000000003ea0       0x40 lib_generic/libgeneric.a(display_options.o)
+ .pdr           0x0000000000003ee0      0x260 lib_generic/libgeneric.a(string.o)
+ .pdr           0x0000000000004140       0xe0 lib_generic/libgeneric.a(vsprintf.o)
+ .pdr           0x0000000000004220      0x200 lib_generic/libgeneric.a(zlib.o)
+ .pdr           0x0000000000004420       0x80 lib_generic/libgeneric.a(LzmaDecode.o)
+ .pdr           0x00000000000044a0       0x60 common/libcommon.a(exports.o)
+ .pdr           0x0000000000004500      0x100 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128_pci.o)
+ .pdr           0x0000000000004600      0x180 cpu/mips/ar7100/libar7100.a(ag7100.o)
+
+.stab           0x0000000000000000     0x1530
+ .stab          0x0000000000000000      0xbb8 cpu/mips/start.o
+ .stab          0x0000000000000bb8      0x360 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(lowlevel_init.o)
+                                        0x36c (size before relaxing)
+ .stab          0x0000000000000f18      0x618 cpu/mips/libmips.a(cache.o)
+                                        0x624 (size before relaxing)
+
+.stabstr        0x0000000000000000      0x19c
+ .stabstr       0x0000000000000000      0x19c cpu/mips/start.o
+
+.mdebug.abi32   0x0000000000000000        0x0
+
+.comment        0x0000000000000000      0x860
+ .comment       0x0000000000000000       0x20 common/libcommon.a(cmd_autoscript.o)
+ .comment       0x0000000000000020       0x20 common/libcommon.a(cmd_boot.o)
+ .comment       0x0000000000000040       0x20 common/libcommon.a(cmd_bootm.o)
+ .comment       0x0000000000000060       0x20 common/libcommon.a(cmd_console.o)
+ .comment       0x0000000000000080       0x20 common/libcommon.a(cmd_elf.o)
+ .comment       0x00000000000000a0       0x20 common/libcommon.a(cmd_flash.o)
+ .comment       0x00000000000000c0       0x20 common/libcommon.a(cmd_itest.o)
+ .comment       0x00000000000000e0       0x20 common/libcommon.a(cmd_jffs2.o)
+ .comment       0x0000000000000100       0x20 common/libcommon.a(cmd_load.o)
+ .comment       0x0000000000000120       0x20 common/libcommon.a(cmd_mem.o)
+ .comment       0x0000000000000140       0x20 common/libcommon.a(cmd_mii.o)
+ .comment       0x0000000000000160       0x20 common/libcommon.a(cmd_misc.o)
+ .comment       0x0000000000000180       0x20 common/libcommon.a(cmd_net.o)
+ .comment       0x00000000000001a0       0x20 common/libcommon.a(cmd_nvedit.o)
+ .comment       0x00000000000001c0       0x20 common/libcommon.a(cmd_pci.o)
+ .comment       0x00000000000001e0       0x20 common/libcommon.a(command.o)
+ .comment       0x0000000000000200       0x20 common/libcommon.a(console.o)
+ .comment       0x0000000000000220       0x20 common/libcommon.a(devices.o)
+ .comment       0x0000000000000240       0x20 common/libcommon.a(dlmalloc.o)
+ .comment       0x0000000000000260       0x20 common/libcommon.a(env_common.o)
+ .comment       0x0000000000000280       0x20 common/libcommon.a(env_flash.o)
+ .comment       0x00000000000002a0       0x20 common/libcommon.a(flash.o)
+ .comment       0x00000000000002c0       0x20 common/libcommon.a(hush.o)
+ .comment       0x00000000000002e0       0x20 common/libcommon.a(lists.o)
+ .comment       0x0000000000000300       0x20 common/libcommon.a(miiphyutil.o)
+ .comment       0x0000000000000320       0x20 common/libcommon.a(s_record.o)
+ .comment       0x0000000000000340       0x20 common/libcommon.a(xyzModem.o)
+ .comment       0x0000000000000360       0x20 common/libcommon.a(main.o)
+ .comment       0x0000000000000380       0x20 common/libcommon.a(crc16.o)
+ .comment       0x00000000000003a0       0x20 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(ar7100_flash.o)
+ .comment       0x00000000000003c0       0x20 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128.o)
+ .comment       0x00000000000003e0       0x20 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(rtl8366s_phy.o)
+ .comment       0x0000000000000400       0x20 cpu/mips/libmips.a(cpu.o)
+ .comment       0x0000000000000420       0x20 cpu/mips/libmips.a(interrupts.o)
+ .comment       0x0000000000000440       0x20 cpu/mips/ar7100/libar7100.a(ar7100_serial.o)
+ .comment       0x0000000000000460       0x20 cpu/mips/ar7100/libar7100.a(meminit.o)
+ .comment       0x0000000000000480       0x20 lib_mips/libmips.a(board.o)
+ .comment       0x00000000000004a0       0x20 lib_mips/libmips.a(time.o)
+ .comment       0x00000000000004c0       0x20 lib_mips/libmips.a(mips_linux.o)
+ .comment       0x00000000000004e0       0x20 fs/cramfs/libcramfs.a(cramfs.o)
+ .comment       0x0000000000000500       0x20 fs/cramfs/libcramfs.a(uncompress.o)
+ .comment       0x0000000000000520       0x20 fs/jffs2/libjffs2.a(jffs2_1pass.o)
+ .comment       0x0000000000000540       0x20 fs/jffs2/libjffs2.a(compr_rtime.o)
+ .comment       0x0000000000000560       0x20 fs/jffs2/libjffs2.a(compr_rubin.o)
+ .comment       0x0000000000000580       0x20 fs/jffs2/libjffs2.a(compr_zlib.o)
+ .comment       0x00000000000005a0       0x20 fs/jffs2/libjffs2.a(mini_inflate.o)
+ .comment       0x00000000000005c0       0x20 fs/squashfs/libsquashfs.a(squashfs.o)
+ .comment       0x00000000000005e0       0x20 fs/squashfs/libsquashfs.a(uncompress.o)
+ .comment       0x0000000000000600       0x20 drivers/libdrivers.a(pci.o)
+ .comment       0x0000000000000620       0x20 net/libnet.a(net.o)
+ .comment       0x0000000000000640       0x20 net/libnet.a(tftp.o)
+ .comment       0x0000000000000660       0x20 net/libnet.a(bootp.o)
+ .comment       0x0000000000000680       0x20 net/libnet.a(rarp.o)
+ .comment       0x00000000000006a0       0x20 net/libnet.a(eth.o)
+ .comment       0x00000000000006c0       0x20 net/libnet.a(nfs.o)
+ .comment       0x00000000000006e0       0x20 net/libnet.a(nmrp.o)
+ .comment       0x0000000000000700       0x20 rtc/librtc.a(date.o)
+ .comment       0x0000000000000720       0x20 lib_generic/libgeneric.a(crc32.o)
+ .comment       0x0000000000000740       0x20 lib_generic/libgeneric.a(ctype.o)
+ .comment       0x0000000000000760       0x20 lib_generic/libgeneric.a(display_options.o)
+ .comment       0x0000000000000780       0x20 lib_generic/libgeneric.a(string.o)
+ .comment       0x00000000000007a0       0x20 lib_generic/libgeneric.a(vsprintf.o)
+ .comment       0x00000000000007c0       0x20 lib_generic/libgeneric.a(zlib.o)
+ .comment       0x00000000000007e0       0x20 lib_generic/libgeneric.a(LzmaDecode.o)
+ .comment       0x0000000000000800       0x20 common/libcommon.a(exports.o)
+ .comment       0x0000000000000820       0x20 board/ar7100/hw29763654p16p128/libhw29763654p16p128.a(hw29763654p16p128_pci.o)
+ .comment       0x0000000000000840       0x20 cpu/mips/ar7100/libar7100.a(ag7100.o)
