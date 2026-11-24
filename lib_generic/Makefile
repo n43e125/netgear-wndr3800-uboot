@@ -25,10 +25,16 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)libgeneric.a
 
+ifeq ($(COMPRESSED_UBOOT),1)
+COBJS   = crc32.o ctype.o display_options.o ldiv.o \
+		  string.o vsprintf.o LzmaWrapper.o LzmaDecode.o
+else
 COBJS	= bzlib.o bzlib_crctable.o bzlib_decompress.o \
-	  bzlib_randtable.o bzlib_huffman.o \
-	  crc32.o ctype.o display_options.o ldiv.o \
-	  string.o vsprintf.o zlib.o
+		  bzlib_randtable.o bzlib_huffman.o \
+		  crc32.o ctype.o display_options.o ldiv.o \
+		  string.o vsprintf.o zlib.o LzmaDecode.o LzmaWrapper.o
+endif
+CFLAGS += -DCONFIG_LZMA=1
 
 SRCS 	:= $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS))

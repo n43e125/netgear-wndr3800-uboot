@@ -194,7 +194,11 @@ void	reset_cmd_timeout(void);
 /* lib_$(ARCH)/board.c */
 void	board_init_f  (ulong);
 void	board_init_r  (gd_t *, ulong);
+#ifdef COMPRESSED_UBOOT
+int	checkboard    (char *);
+#else
 int	checkboard    (void);
+#endif
 int	checkflash    (void);
 int	checkdram     (void);
 char *	strmhz(char *buf, long hz);
@@ -237,7 +241,11 @@ int env_complete(char *var, int maxv, char *cmdv[], int maxsz, char *buf);
 #endif
 
 void	pci_init      (void);
+#ifdef  COMPRESSED_UBOOT
+int	pci_init_board(void);
+#else
 void	pci_init_board(void);
+#endif /* #ifdef COMPRESSED_UBOOT */
 void	pciinfo	      (int, int);
 
 #if defined(CONFIG_PCI) && defined(CONFIG_440)
@@ -258,6 +266,18 @@ void	pciinfo	      (int, int);
 
 int	misc_init_f   (void);
 int	misc_init_r   (void);
+
+int	board_reset_button_is_press   (void);
+void	board_reset_default_LedSet   (void);
+void	board_power_led   (int);
+void	board_test_led   (int);
+void	board_reset_default   (void);
+
+#ifdef NETGEAR_BOARD_ID_SUPPORT
+int board_match_image_hw_id (ulong);
+int board_match_image_model_id (ulong);
+void board_update_image_model_id (ulong);
+#endif
 
 /* common/exports.c */
 void	jumptable_init(void);
@@ -367,6 +387,7 @@ int	dcache_status (void);
 void	dcache_enable (void);
 void	dcache_disable(void);
 void	relocate_code (ulong, gd_t *, ulong);
+void 	ar7240_ddr_tap_init(void);
 ulong	get_endaddr   (void);
 void	trap_init     (ulong);
 #if defined (CONFIG_4xx)	|| \

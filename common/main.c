@@ -328,6 +328,13 @@ void main_loop (void)
 	trab_vfd (bmp);
 #endif	/* CONFIG_VFD && VFD_TEST_LOGO */
 
+#ifdef FIRMWARE_INTEGRITY_CHECK
+	//char *bootm_ecos = "bootm $ecos";
+	int len;
+	ulong data, checksum;
+	image_header_t *hdr = (image_header_t *)(CFG_FLASH_BASE + CONFIG_JFFS2_PART_OFFSET - 0x40 );
+#endif
+
 #ifdef CONFIG_BOOTCOUNT_LIMIT
 	bootcount = bootcount_load();
 	bootcount++;
@@ -385,10 +392,13 @@ void main_loop (void)
 #endif /* CONFIG_PREBOOT */
 
 #if defined(CONFIG_BOOTDELAY) && (CONFIG_BOOTDELAY >= 0)
+#if defined(CONFIG_WNR1000V2) || defined(CONFIG_WNR1100) || defined(CONFIG_WNR612) || defined(CONFIG_WNR2200) || defined(CONFIG_WNR2000V3) || defined(CONFIG_WNR1000V4) || defined(CONFIG_HW29763847P16P64)
+	bootdelay = CONFIG_BOOTDELAY;
+#else
 	s = getenv ("bootdelay");
 	bootdelay = s ? (int)simple_strtol(s, NULL, 10) : CONFIG_BOOTDELAY;
-
-	debug ("### main_loop entered: bootdelay=%d\n\n", bootdelay);
+#endif
+//	debug ("### main_loop entered: bootdelay=%d\n\n", bootdelay);
 
 # ifdef CONFIG_BOOT_RETRY_TIME
 	init_cmd_timeout ();
@@ -403,12 +413,100 @@ void main_loop (void)
 	else
 #endif /* CONFIG_BOOTCOUNT_LIMIT */
 		s = getenv ("bootcmd");
+       if (!s) {
+#ifdef CONFIG_ROOTFS_FLASH
+           /* XXX if rootfs is in flash, expect uImage to be in flash */
+#ifdef CONFIG_AR7100
+           setenv ("bootcmd", "bootm 0xbf200000");
+#else
+           setenv ("bootcmd", "bootm 0xbf450000");
+#endif /* CONFIG_AR7100 */
+#else
+           setenv ("bootcmd", "tftpboot 0x8022c090 uImage; bootm 0x8022c090");
+#endif
+       }
+		s = getenv ("bootcmd");
 
-	debug ("### main_loop: bootcmd=\"%s\"\n", s ? s : "<UNDEFINED>");
+//	debug ("### main_loop: bootcmd=\"%s\"\n", s ? s : "<UNDEFINED>");
 
 	if (bootdelay >= 0 && s && !abortboot (bootdelay)) {
 # ifdef CONFIG_AUTOBOOT_KEYED
 		int prev = disable_ctrlc(1);	/* disable Control C checking */
+# endif
+#ifdef FIRMWARE_INTEGRITY_CHECK
+		if (ntohl(hdr->ih_magic) != IH_MAGIC) {
+			puts ("   Bad Magic Number\n");
+			goto bad_img;
+		}
+		else {
+			image_header_t theader;
+			memmove(&theader,hdr,sizeof(image_header_t));
+			data = (ulong)&theader;
+			len  = sizeof(image_header_t);
+
+			checksum = ntohl(theader.ih_hcrc);
+			theader.ih_hcrc = 0;
+
+			if (crc32 (0, (char *)data, len) != checksum) {
+				puts ("Bad Header Checksum\n");
+				goto bad_img;
+			}
+			else {
+				data = (ulong)hdr + sizeof(image_header_t);
+				len  = ntohl(hdr->ih_size);
+				puts ("   Verifying Checksum ... ");
+				if (crc32 (0, (char *)data, len) != ntohl(hdr->ih_dcrc)) {
+					printf ("Bad Data CRC\n");
+					goto bad_img;
+				}
+				else {
+					puts ("OK\n");
+#ifndef SECOND_PART_FIRMWARE_INTEGRITY_CHECK
+					goto good_img;
+#endif
+				}
+			}
+		}
+#ifdef SECOND_PART_FIRMWARE_INTEGRITY_CHECK
+		printf(" Begin Second part firmware check\n");
+		hdr = (((((ulong)hdr + sizeof(image_header_t) + ntohl(hdr->ih_size))
+				/ 0x10000) + 1 ) * 0x10000) - sizeof(image_header_t);
+		if (ntohl(hdr->ih_magic) != IH_MAGIC) {
+			puts ("Second part Bad Magic Number\n");
+			goto bad_img;
+		}
+		else {
+			image_header_t theader;
+			memmove(&theader,hdr,sizeof(image_header_t));
+			data = (ulong)&theader;
+			len  = sizeof(image_header_t);
+
+			checksum = ntohl(theader.ih_hcrc);
+			theader.ih_hcrc = 0;
+
+			if (crc32 (0, (char *)data, len) != checksum) {
+				puts ("Second part Bad Header Checksum\n");
+				goto bad_img;
+			}
+			else {
+				data = (ulong)hdr + sizeof(image_header_t);
+				len  = ntohl(hdr->ih_size);
+				puts ("   Verifying Second part Checksum ... ");
+				if (crc32 (0, (char *)data, len) != ntohl(hdr->ih_dcrc)) {
+					printf ("Second part Bad Data CRC\n");
+					goto bad_img;
+				}
+				else {
+					puts ("OK\n");
+					goto good_img;
+				}
+			}
+		}
+
+#endif
+bad_img:
+		StartTftpServerToRecoveFirmware();
+good_img:
 # endif
 
 # ifndef CFG_HUSH_PARSER

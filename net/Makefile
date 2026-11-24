@@ -27,7 +27,11 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)libnet.a
 
-COBJS	= net.o tftp.o bootp.o rarp.o eth.o nfs.o sntp.o
+ifeq ($(COMPRESSED_UBOOT),1)
+COBJS	= net.o tftp.o rarp.o eth.o nmrp.o
+else
+COBJS	= net.o tftp.o bootp.o rarp.o eth.o nfs.o sntp.o nmrp.o
+endif
 
 SRCS	:= $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS))

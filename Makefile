@@ -7,7 +7,7 @@
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundatio; either version 2 of
+# published by the Free Software Foundation; either version 2 of
 # the License, or (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -92,6 +92,10 @@ export	TOPDIR SRCTREE OBJTREE
 MKCONFIG	:= $(SRCTREE)/mkconfig
 export MKCONFIG
 
+ifndef COMPRESSED_UBOOT
+COMPRESSED_UBOOT = 0
+endif 
+
 ifneq ($(OBJTREE),$(SRCTREE))
 REMOTE_BUILD 	:= 1
 export REMOTE_BUILD
@@ -135,7 +139,7 @@ CROSS_COMPILE = i386-linux-
 endif
 endif
 ifeq ($(ARCH),mips)
-CROSS_COMPILE = mips_4KC-
+CROSS_COMPILE = mips-linux-
 endif
 ifeq ($(ARCH),nios)
 CROSS_COMPILE = nios-elf-
@@ -164,6 +168,11 @@ include $(TOPDIR)/config.mk
 # U-Boot objects....order is important (i.e. start must be first)
 
 OBJS  = cpu/$(CPU)/start.o
+
+ifeq ($(COMPRESSED_UBOOT),1)
+OBJS_BOOTSTRAP  = cpu/$(CPU)/start_bootstrap.o
+endif
+
 ifeq ($(CPU),i386)
 OBJS += cpu/$(CPU)/start16.o
 OBJS += cpu/$(CPU)/reset.o
@@ -191,22 +200,39 @@ ifdef SOC
 LIBS += cpu/$(CPU)/$(SOC)/lib$(SOC).a
 endif
 LIBS += lib_$(ARCH)/lib$(ARCH).a
+
+ifneq ($(COMPRESSED_UBOOT),1)
 LIBS += fs/cramfs/libcramfs.a fs/fat/libfat.a fs/fdos/libfdos.a fs/jffs2/libjffs2.a \
-	fs/reiserfs/libreiserfs.a fs/ext2/libext2fs.a
-LIBS += net/libnet.a
+	fs/reiserfs/libreiserfs.a fs/ext2/libext2fs.a fs/squashfs/libsquashfs.a
 LIBS += disk/libdisk.a
-LIBS += rtc/librtc.a
 LIBS += dtt/libdtt.a
 LIBS += drivers/libdrivers.a
+LIBS += drivers/sk98lin/libsk98lin.a
+endif
+
 LIBS += drivers/nand/libnand.a
 LIBS += drivers/nand_legacy/libnand_legacy.a
-LIBS += drivers/sk98lin/libsk98lin.a
+LIBS += net/libnet.a
+LIBS += rtc/librtc.a
 LIBS += post/libpost.a post/cpu/libcpu.a
 LIBS += common/libcommon.a
 LIBS += $(BOARDLIBS)
 
 LIBS := $(addprefix $(obj),$(LIBS))
+
+ifeq ($(COMPRESSED_UBOOT),1)
+LIBS_BOOTSTRAP = lib_bootstrap/libbootstrap.a 
+#LIBS_BOOTSTRAP += lib_$(CPU)/lib$(CPU).a
+LIBS_BOOTSTRAP += board/$(BOARDDIR)/lib$(BOARD).a 
+LIBS_BOOTSTRAP += cpu/$(CPU)/lib$(CPU).a
+LIBS_BOOTSTRAP += cpu/$(CPU)/$(SOC)/lib$(SOC).a
+endif
+
 .PHONY : $(LIBS)
+
+ifeq ($(COMPRESSED_UBOOT),1)
+.PHONY : $(LIBS_BOOTSTRAP)
+endif
 
 # Add GCC lib
 PLATFORM_LIBS += -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`) -lgcc
@@ -214,7 +240,6 @@ PLATFORM_LIBS += -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`) -
 # The "tools" are needed early, so put this first
 # Don't include stuff already done in $(LIBS)
 SUBDIRS	= tools \
-	  examples \
 	  post \
 	  post/cpu
 .PHONY : $(SUBDIRS)
@@ -232,7 +257,11 @@ __LIBS := $(subst $(obj),,$(LIBS))
 
 ALL = $(obj)u-boot.srec $(obj)u-boot.bin $(obj)System.map $(U_BOOT_NAND)
 
+ifeq ($(COMPRESSED_UBOOT),1)
+all:		$(ALL) tuboot.bin
+else
 all:		$(ALL)
+endif
 
 $(obj)u-boot.hex:	$(obj)u-boot
 		$(OBJCOPY) ${OBJCFLAGS} -O ihex $< $@
@@ -273,6 +302,34 @@ $(NAND_SPL):	version
 
 $(U_BOOT_NAND):	$(NAND_SPL) $(obj)u-boot.bin
 		cat nand_spl/u-boot-spl-16k.bin $(obj)u-boot.bin > $(obj)u-boot-nand.bin
+
+ifeq ($(COMPRESSED_UBOOT),1)
+
+LZMA = $(BUILD_DIR)/util/lzma
+
+tuboot.bin:	System.map bootstrap.bin u-boot.lzimg	
+		@cat bootstrap.bin > $@
+		@cat u-boot.lzimg >> $@
+
+u-boot.lzimg: $(obj)u-boot.bin System.map 
+		@$(LZMA) e $(obj)u-boot.bin u-boot.bin.lzma
+		@./tools/mkimage -A mips -T firmware -C lzma \
+		-a 0x$(shell grep "T _start" $(TOPDIR)/System.map | awk '{ printf "%s", $$1 }') \
+		-e 0x$(shell grep "T _start" $(TOPDIR)/System.map | awk '{ printf "%s", $$1 }') \
+		-n 'u-boot image' -d $(obj)u-boot.bin.lzma $@
+
+bootstrap.bin:	bootstrap
+		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
+
+bootstrap:	depend version $(SUBDIRS) $(OBJS_BOOTSTRAP) $(LIBS_BOOTSTRAP) $(LDSCRIPT_BOOTSTRAP)
+		UNDEF_SYM=`$(OBJDUMP) -x $(LIBS_BOOTSTRAP) |sed  -n -e 's/.*\(__u_boot_cmd_.*\)/-u\1/p'|sort|uniq`;\
+		$(LD) $(LDFLAGS_BOOTSTRAP) $$UNDEF_SYM $(OBJS_BOOTSTRAP) \
+			--start-group $(LIBS_BOOTSTRAP) --end-group $(PLATFORM_LIBS) \
+			-Map bootstrap.map -o bootstrap
+
+$(LIBS_BOOTSTRAP):
+		$(MAKE) -C `dirname $@`
+endif
 
 version:
 		@echo -n "#define U_BOOT_VERSION \"U-Boot " > $(VERSION_FILE); \
@@ -2106,6 +2163,229 @@ pb1000_config		: 	unconfig
 purple_config :		unconfig
 	@$(MKCONFIG) $(@:_config=) mips mips purple
 
+#########################################################################
+## MIPS32 AR7100 (24K)
+#########################################################################
+tb225_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@./mkconfig -a tb225 mips mips tb225 ar7100 ar7100
+
+pb42_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@./mkconfig -a pb42 mips mips pb42 ar7100 ar7100
+
+tb243_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@echo "#define CONFIG_AR9100 1" >>include/config.h
+	@./mkconfig -a tb243 mips mips tb243 ar7100 ar7100
+
+ap83_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@echo "#define CONFIG_AR9100 1" >>include/config.h
+	@./mkconfig -a ap83 mips mips ap83 ar7100 ar7100
+
+ap81_config		: 	unconfig
+	@ >include/config.h
+	@echo '#ifndef _INCLUDE_CONFIG_H' >>include/config.h
+	@echo '#define _INCLUDE_CONFIG_H' >>include/config.h
+	@echo '#define CONFIG_AR7100 1' >>include/config.h
+	@echo '#define CONFIG_AR9100 1' >>include/config.h
+ifeq ($(BUILD_CONFIG), _4m)
+	@echo '#define BUILD_CONFIG_OVERRIDE 1' >>include/config.h
+	@echo '#define CFG_FLASH_SIZE 0x00400000' >>include/config.h
+	@echo '#define CONFIG_BOOTARGS "console=ttyS0,115200 root=31:02 rootfstype=jffs2 init=/sbin/init mtdparts=ar7100-nor0:256k(u-boot),64k(u-boot-env),2688k(rootfs),1024k(uImage),64k(ART)"' >>include/config.h
+	@echo '#define MTDPARTS_DEFAULT "mtdparts=ar7100-nor0:256k(u-boot),64k(u-boot-env),2688k(rootfs),1024k(uImage),64k(ART)"' >>include/config.h
+	@echo '#define CONFIG_BOOTCOMMAND "bootm 0xbf300000"' >>include/config.h
+endif
+	@echo '#endif /* _INCLUDE_CONFIG_H */' >>include/config.h
+	@./mkconfig -a ap81 mips mips ap81 ar7100 ar7100
+
+ap94_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@./mkconfig -a ap94 mips mips ap94 ar7100 ar7100
+
+wndr3700u_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@echo "#define CONFIG_WNDR3700U 1" >>include/config.h
+	@echo "#define CONFIG_WNDR3700U_LED 1" >>include/config.h
+	@./mkconfig -a wndr3700u mips mips wndr3700u ar7100 ar7100
+
+wndr3700v1h2_config                :       unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@echo "#define CONFIG_WNDR3700V1H2 1" >>include/config.h
+	@echo "#define CONFIG_WNDR3700V1H2_LED 1" >>include/config.h
+	@./mkconfig -a wndr3700v1h2 mips mips wndr3700v1h2 ar7100 ar7100
+
+hw29763654p16p128_config                :       unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@echo "#define CONFIG_HW29763654P16P128 1" >>include/config.h
+	@./mkconfig -a hw29763654p16p128 mips mips hw29763654p16p128 ar7100 ar7100
+
+ap94min_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@./mkconfig -a ap94min mips mips ap94 ar7100 ar7100
+
+pb45_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@./mkconfig -a pb45 mips mips pb45 ar7100 ar7100
+
+ap96_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@./mkconfig -a ap96 mips mips ap96 ar7100 ar7100
+
+cus97_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7100 1" >>include/config.h
+	@echo "#define CONFIG_AR9100 1" >>include/config.h
+	@./mkconfig -a cus97 mips mips cus97 ar7100 ar7100
+ar7240_emu_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@./mkconfig -a ar7240_emu mips mips ar7240_emu ar7240 ar7240
+
+db12x_config			: 	unconfig
+	@ >include/config.h
+	@echo '#define CONFIG_ATHRS17_PHY 1' >>include/config.h
+	@echo '#define CFG_AG7240_NMACS 1' >>include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@echo "#define CONFIG_WASP 1" >>include/config.h
+	@./mkconfig -a db12x mips mips db12x ar7240 ar7240
+
+wndr3700v3_config       :       unconfig
+	@ >include/config.h
+	@echo '#define CONFIG_ATHRS17_PHY 1' >>include/config.h
+	@echo '#define CFG_AG7240_NMACS 1' >>include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@echo "#define CONFIG_WASP 1" >>include/config.h
+	@echo "#define CONFIG_WNDR3700V3 1" >>include/config.h
+	@./mkconfig -a wndr3700v3 mips mips wndr3700v3 ar7240 ar7240
+
+ap91_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@./mkconfig -a ap91 mips mips ap91 ar7240 ar7240
+ap91-2MB_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@./mkconfig -a ap91-2MB mips mips ap91-2MB ar7240 ar7240
+wnr1000v2_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@echo "#define CONFIG_WNR1000V2 1" >>include/config.h
+	@./mkconfig -a wnr1000v2 mips mips wnr1000v2 ar7240 ar7240
+wnr1000v2-vc_config    :       unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@echo "#define CONFIG_WNR1000V2 1" >>include/config.h
+	@echo "#define CONFIG_WNR1000V2_VC 1" >>include/config.h
+	@./mkconfig -a wnr1000v2 mips mips wnr1000v2 ar7240 ar7240
+wnr1000v2-vm_config    :	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@echo "#define CONFIG_WNR1000V2 1" >>include/config.h
+	@echo "#define CONFIG_WNR1000V2_VM 1" >>include/config.h
+	@./mkconfig -a wnr1000v2 mips mips wnr1000v2 ar7240 ar7240
+wnr612_config:
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@echo "#define CONFIG_WNR612 1" >>include/config.h
+	@./mkconfig -a wnr612 mips mips wnr612 ar7240 ar7240
+wnr2200_config:
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@echo "#define CONFIG_WNR2200 1" >>include/config.h
+	@./mkconfig -a wnr2200 mips mips wnr2200 ar7240 ar7240
+wnr2000v3_config:
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@echo "#define CONFIG_WNR2000V3 1" >>include/config.h
+	@./mkconfig -a wnr2000v3 mips mips wnr2000v3 ar7240 ar7240
+wnr1100_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@echo "#define CONFIG_WNR1100 1" >>include/config.h
+	@./mkconfig -a wnr1100 mips mips wnr1100 ar7240 ar7240
+ap93_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@./mkconfig -a ap93 mips mips ap93 ar7240 ar7240
+wrt54g_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@./mkconfig -a wrt54g mips mips wrt54g ar7240 ar7240
+pb90_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@./mkconfig -a pb90 mips mips pb90 ar7240 ar7240
+k31_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@echo "#define CONFIG_K31    1" >>include/config.h
+	@./mkconfig -a pb90 mips mips pb90 ar7240 ar7240
+tb327_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@./mkconfig -a tb327 mips mips tb327 ar7240 ar7240
+pb93_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@./mkconfig -a pb93 mips mips pb93 ar7240 ar7240
+ap99_config		: 	unconfig
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@./mkconfig -a ap99 mips mips ap99 ar7240 ar7240
+
+hornet_common_config        :
+	@ >include/config.h
+	@echo "#define CONFIG_AR7240 1" >>include/config.h
+	@echo "#define CONFIG_MACH_HORNET 1" >>include/config.h
+ifeq ($(CONFIG_HORNET_1_1_WAR), 1)
+	@echo "#define CONFIG_HORNET_1_1_WAR 1" >>include/config.h
+endif
+ifeq ($(NEW_DDR_TAP_CAL), 1)
+	@echo "#define NEW_DDR_TAP_CAL 1" >>include/config.h
+endif
+
+
+ap121-2.6.31_config		    : 	unconfig    hornet_common_config
+	@echo "#define FLASH_SIZE $(FLASH_SIZE)" >>include/config.h
+	@echo "#define CONFIG_AP121 1" >>include/config.h
+	@./mkconfig -a ap121 mips mips ap121 ar7240 ar7240
+
+ap121-2.6.31-2MB_config		: 	unconfig    hornet_common_config
+	@echo "#define CONFIG_AP121 1" >>include/config.h
+	@./mkconfig -a ap121 mips mips ap121 ar7240 ar7240
+ifeq ($(VXWORKS_UBOOT), 1)
+	@echo "#define VXWORKS_UBOOT 1" >>include/config.h
+endif
+
+ap121-2MB_config		: 	unconfig   hornet_common_config
+	@echo "#define CONFIG_AP121 1" >>include/config.h
+	@./mkconfig -a ap121 mips mips ap121 ar7240 ar7240
+
+wnr1000v4_config		: 	unconfig   hornet_common_config
+	@echo "#define CONFIG_HORNET_1_1_WAR 1" >>include/config.h
+	@echo "#define NEW_DDR_TAP_CAL 1" >>include/config.h
+	@echo "#define CONFIG_WNR1000V4 1" >>include/config.h
+	@./mkconfig -a wnr1000v4 mips mips wnr1000v4 ar7240 ar7240
+
+hw29763847p16p64_config		: 	unconfig   hornet_common_config
+	@echo "#define CONFIG_HORNET_1_1_WAR 1" >>include/config.h
+	@echo "#define NEW_DDR_TAP_CAL 1" >>include/config.h
+	@echo "#define CONFIG_HW29763847P16P64 1" >>include/config.h
+	@./mkconfig -a hw29763847p16p64 mips mips hw29763847p16p64 ar7240 ar7240
+
 #========================================================================
 # Nios
 #========================================================================
@@ -2225,7 +2505,7 @@ dspstamp_config	:	unconfig
 clean:
 	find $(OBJTREE) -type f \
 		\( -name 'core' -o -name '*.bak' -o -name '*~' \
-		-o -name '*.o'  -o -name '*.a'  \) -print \
+		-o -name '*.o'  -o -name '*.a' -o -name .depend  \) -print \
 		| xargs rm -f
 	rm -f $(obj)examples/hello_world $(obj)examples/timer \
 	      $(obj)examples/eepro100_eeprom $(obj)examples/sched \
@@ -2246,6 +2526,11 @@ clean:
 	rm -f $(obj)include/bmp_logo.h
 	find nand_spl -lname "*" -print | xargs rm -f
 	rm -f nand_spl/u-boot-spl nand_spl/u-boot-spl.map
+ifeq ($(COMPRESSED_UBOOT),1)
+	rm -f lib_bootstrap/*.o
+	rm -f lib_bootstrap/*.a
+	rm -f bootstrap bootstrap.bin tuboot.bin u-boot.lzimg
+endif
 
 clobber:	clean
 	find $(OBJTREE) -type f \( -name .depend \

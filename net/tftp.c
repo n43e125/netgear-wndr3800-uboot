@@ -10,6 +10,9 @@
 #include "tftp.h"
 #include "bootp.h"
 
+#ifdef CFG_NMRP
+#include "nmrp.h"
+#endif
 #undef	ET_DEBUG
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
@@ -50,6 +53,20 @@ static int	TftpState;
 #define STATE_BAD_MAGIC	4
 #define STATE_OACK	5
 
+#ifdef CFG_NMRP
+uchar TestNmrpIP[2] = {192,168};
+static int Nmrp_Waiting_TimeoutCount = 0;
+static int nmrpconfflag = 1;
+#endif
+
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+#define STATE_WRQ 6
+#define STATE_BAD_IMAGE_TYPE 7
+#define STATE_BAD_IMAGE_CHKSUM 8
+static int TftpClientPort;
+static uchar ImageCheckSum = 0;
+#endif
+
 #define TFTP_BLOCK_SIZE		512		    /* default TFTP block size	*/
 #define TFTP_SEQUENCE_SIZE	((ulong)(1<<16))    /* sequence number is 16 bit */
 
@@ -88,6 +105,18 @@ store_block (unsigned block, uchar * src, unsigned len)
 	else
 #endif /* CFG_DIRECT_FLASH_TFTP */
 	{
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+		if(NetRunTftpServer)
+		{
+			uchar *dest=(uchar *)(load_addr + offset);
+			while(len--)
+			{
+				ImageCheckSum = (ImageCheckSum + (*src)) & 0xFF;
+				*dest++=*src++;
+			}
+		}
+		else
+#endif
 		(void)memcpy((void *)(load_addr + offset), src, len);
 	}
 
@@ -166,8 +195,45 @@ TftpSend (void)
 		pkt += 18 /*strlen("File has bad magic")*/ + 1;
 		len = pkt - xp;
 		break;
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+		case STATE_BAD_IMAGE_TYPE:
+			xp = pkt;
+			s = (ushort *)pkt;
+			*s++=htons(TFTP_ERROR);
+			*s++=htons(2);
+			strcpy ((char *)pkt, "No binary mode used");
+			pkt += 19/*strlen("No binary mode used")*/ + 1;
+			len = pkt - xp;
+			break;
+		case STATE_BAD_IMAGE_CHKSUM:
+			xp = pkt;
+			s=(ushort *)pkt;
+			*s++=htons(TFTP_ERROR);
+			*s++=htons(2);
+			strcpy ((char *)pkt, "File has bad checksum");
+			pkt += 21 /*"File has bad checksum"*/ +1;
+			len = pkt -xp;
+			break;
+#endif
 	}
 
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+	if (NetRunTftpServer)
+	{
+		NetSendUDPPacket(TftpClientEther, TftpClientIP, TftpClientPort,TftpOurPort,len);
+		if (TftpState == STATE_BAD_IMAGE_TYPE)
+		{
+			puts("\nNo binary mode used!\n");
+			ResetTftpServer();
+		}
+		else if (TftpState == STATE_BAD_IMAGE_CHKSUM)
+		{
+			puts("File has bad checksum!\n");
+			ResetTftpServer();
+		}
+	}
+	else
+#endif
 	NetSendUDPPacket(NetServerEther, NetServerIP, TftpServerPort, TftpOurPort, len);
 }
 
@@ -385,5 +451,225 @@ TftpStart (void)
 
 	TftpSend ();
 }
+
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+static int TftpServerWaiting = 1;
+static uint TftpLedCount = 0;
+
+static void
+TftpServerTimeout (void)
+{
+	if(TftpServerWaiting)
+	{
+#ifdef CFG_NMRP
+		if(NmrpState == STATE_CONFIGING )
+		{
+			if(nmrpconfflag){
+				puts("\nwaiting nmrp server to upload firmware!\n");
+				nmrpconfflag = 0;
+			}
+			if( ++Nmrp_Waiting_TimeoutCount > NMRP_MAX_RETRY_TFTP_UL)
+			{
+				puts("\n retry tftp_upload count exceeded;\n");
+				Nmrp_Waiting_TimeoutCount = 0;
+				NmrpState = STATE_LISTENING;
+				NmrpSend();
+			}else{
+				puts("T");
+				NmrpSend();
+				NetSetTimeout((NMRP_TIMEOUT_REQ*CFG_HZ)/2,TftpServerTimeout);
+			}
+		}else{
+#endif
+		TftpLedCount++;
+		if ((TftpLedCount % 2)== 1)
+		{
+			printf("Upgrade Mode\b\b\b\b\b\b\b\b\b\b\b\b");
+			/*power LED (GREEN) 0.25 second on */
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+			power_led(0);
+#else
+			board_power_led(0);
+#endif
+			NetSetTimeout ((CFG_HZ*1)/4, TftpServerTimeout);
+		}else{
+			/* power LED (GREEN) 0.75 second off */
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+			power_led(1);
+#else
+			board_power_led(1);
+#endif
+			printf("            \b\b\b\b\b\b\b\b\b\b\b\b");
+			NetSetTimeout ((CFG_HZ*3)/4, TftpServerTimeout);
+		}
+#ifdef CFG_NMRP
+	}
+#endif
+	}
+	else{
+		if (++TftpTimeoutCount > TIMEOUT_COUNT) {
+			puts ("\nRetry to wait TFTP Client's Data count exceeded; starting again\n");
+			ResetTftpServer ();
+		} else {
+			puts ("T ");
+			NetSetTimeout (TIMEOUT * CFG_HZ, TftpServerTimeout);
+			TftpSend ();
+		}
+	}
+}
+
+static void
+TftpServerHandler (uchar * pkt, unsigned dest , unsigned src ,unsigned len )
+{
+	ushort  proto;
+	ushort *s;
+
+	if (dest != TftpOurPort) {
+		return;
+	}
+	if (TftpState != STATE_WRQ && src != TftpClientPort) {
+		return;
+	}
+
+	if (len < 2) {
+		return;
+	}
+	len -= 2;
+	/* warning: don't use increment (++) in ntohs() macros!! */
+	s = (ushort *)pkt;
+	proto = *s++;
+	pkt = (uchar *)s;
+	switch(ntohs(proto)){
+		case TFTP_RRQ:
+		case TFTP_ACK:
+		case TFTP_OACK:
+			break;
+
+		case TFTP_WRQ:
+			TftpClientPort = src;
+			TftpServerWaiting = 0;
+
+			pkt += strlen((char *)pkt) + 1;
+
+			if(strcmp(pkt, "octet"))
+			{
+				TftpState = STATE_BAD_IMAGE_TYPE;
+			}
+			else
+			{
+				TftpState = STATE_OACK;
+				puts ("\nRcv:\n\t");
+			}
+			TftpSend (); /* Send ACK */
+			break;
+
+		case TFTP_DATA:
+			if (len < 2)
+				return;
+			len -= 2;
+			TftpBlock = ntohs(*(ushort *)pkt);
+
+			if (TftpBlock == 0)
+			{
+				TftpBlockWrap++;
+				TftpBlockWrapOffset += TFTP_BLOCK_SIZE * TFTP_SEQUENCE_SIZE;
+				printf ("\n\t %lu MB reveived\n\t ", TftpBlockWrapOffset>>20);
+			}
+
+			else
+			{
+				if (((TftpBlock - 1) % 10) == 0)
+				{
+					putc ('.');
+				}
+				else if ((TftpBlock % (10 * HASHES_PER_LINE)) == 0)
+				{
+					puts ("\n\t");
+				}
+			}
+			if (TftpState == STATE_OACK)
+			{
+				/* first block received */
+				TftpState = STATE_DATA;
+				TftpLastBlock = 0;
+				TftpBlockWrap = 0;
+				TftpBlockWrapOffset = 0;
+
+				if (TftpBlock != 1)
+				{
+					/* Assertion */
+					printf ("\nTFTP error: "
+						"First block is not block 1 (%ld)\n"
+						"Starting again\n\n",
+						TftpBlock);
+					ResetTftpServer ();
+					break;
+				}
+			}
+
+			if (TftpBlock == TftpLastBlock)
+			{
+				break;
+			}
+
+			TftpLastBlock = TftpBlock;
+			NetSetTimeout (TIMEOUT * CFG_HZ, TftpServerTimeout);
+
+			store_block (TftpBlock - 1, pkt + 2, len);
+			if(len < TFTP_BLOCK_SIZE)
+			{
+				ImageCheckSum = ~ImageCheckSum;
+				if (ImageCheckSum != 0x00)
+				{
+					TftpState = STATE_BAD_IMAGE_CHKSUM;
+				}
+			}
+			TftpSend ();
+			if (len < TFTP_BLOCK_SIZE && TftpState == STATE_DATA)
+			{
+				puts ("\nDone!\n");
+				NetState = NETLOOP_SUCCESS;
+			}
+
+			break;
+
+		case TFTP_ERROR:
+			printf ("\nTFTP error: '%s' (%d)\n", pkt + 2, ntohs(*(ushort *)pkt));
+			puts ("Starting again\n\n");
+			ResetTftpServer();
+			break;
+	}
+}
+
+void
+TftpServerStart(void)
+{
+#ifdef CFG_NMRP
+	if(NmrpState != STATE_CONFIGING)
+#endif
+	puts ("\nThe Router is in TFTP Server Firmware Recovery mode NOW!\n");
+
+	puts ("Listening on Port : 69, IP Address: ");
+	print_IPaddr (NetOurIP);
+	puts ("...\n");
+	NetSetTimeout (CFG_HZ/10, TftpServerTimeout);
+	NetSetHandler (TftpServerHandler);
+
+	TftpOurPort  = WELL_KNOWN_PORT;
+	TftpTimeoutCount = 0;
+	TftpClientPort = 0;
+	TftpState = STATE_WRQ;
+	TftpBlock = 0;
+
+	TftpServerWaiting = 1;
+	TftpLedCount = 0;
+
+	ImageCheckSum = 0;
+
+	/* zero out client ether in case the client ip has changed */
+	memset(TftpClientEther, 0, 6);
+	TftpClientIP = 0;
+}
+#endif
 
 #endif /* CFG_CMD_NET */

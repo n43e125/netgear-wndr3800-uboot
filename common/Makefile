@@ -27,6 +27,27 @@ LIB	= $(obj)libcommon.a
 
 AOBJS	=
 
+ifeq ($(COMPRESSED_UBOOT),1)
+COBJS	= main.o circbuf.o \
+	  cmd_boot.o cmd_bootm.o \
+	  cmd_cache.o cmd_console.o \
+	  cmd_date.o cmd_dcr.o cmd_display.o cmd_doc.o \
+	  cmd_eeprom.o \
+	  cmd_flash.o \
+	  cmd_immap.o cmd_itest.o \
+	  cmd_mem.o \
+	  cmd_mii.o cmd_misc.o \
+	  cmd_nand.o cmd_net.o cmd_nvedit.o \
+	  cmd_reginfo.o cmd_spi.o \
+	  command.o console.o devices.o dlmalloc.o docecc.o \
+	  environment.o env_common.o \
+	  env_nowhere.o \
+	  exports.o \
+	  flash.o \
+	  hush.o lcd.o lists.o \
+	  memsize.o miiphybb.o miiphyutil.o \
+	  serial.o crc16.o
+else
 COBJS	= main.o ACEX1K.o altera.o bedbug.o circbuf.o \
 	  cmd_ace.o cmd_autoscript.o \
 	  cmd_bdinfo.o cmd_bedbug.o cmd_bmp.o cmd_boot.o cmd_bootm.o \
@@ -40,7 +61,7 @@ COBJS	= main.o ACEX1K.o altera.o bedbug.o circbuf.o \
 	  cmd_nand.o cmd_net.o cmd_nvedit.o \
 	  cmd_pci.o cmd_pcmcia.o cmd_portio.o \
 	  cmd_reginfo.o cmd_reiser.o cmd_scsi.o cmd_spi.o cmd_universe.o \
-	  cmd_usb.o cmd_vfd.o \
+	  cmd_usb.o cmd_vfd.o cmd_ethreg.o cmd_fls.o cmd_ddr.o\
 	  command.o console.o devices.o dlmalloc.o docecc.o \
 	  environment.o env_common.o \
 	  env_nand.o env_dataflash.o env_flash.o env_eeprom.o \
@@ -52,6 +73,16 @@ COBJS	= main.o ACEX1K.o altera.o bedbug.o circbuf.o \
 	  s_record.o serial.o soft_i2c.o soft_spi.o spartan2.o spartan3.o \
 	  usb.o usb_kbd.o usb_storage.o \
 	  virtex2.o xilinx.o crc16.o xyzModem.o
+ifeq ($(BOARD), db12x)
+COBJS	+= cmd_pll_db12x.o
+else
+ifeq ($(BOARD), wndr3700v3)
+COBJS	+= cmd_pll_db12x.o
+else
+COBJS	+= cmd_pll.o
+endif
+endif
+endif
 
 SRCS	:= $(AOBJS:.o=.S) $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(AOBJS) $(COBJS))
