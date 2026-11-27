@@ -262,12 +262,13 @@ The following options need to be configured:
 		PowerPC based boards:
 		---------------------
 
-		CONFIG_ADCIOP		CONFIG_GEN860T		CONFIG_PCI405
-		CONFIG_ADS860		CONFIG_GENIETV		CONFIG_PCIPPC2
-		CONFIG_AMX860		CONFIG_GTH		CONFIG_PCIPPC6
-		CONFIG_AP1000		CONFIG_gw8260		CONFIG_pcu_e
-		CONFIG_AR405		CONFIG_hermes		CONFIG_PIP405
-		CONFIG_BAB7xx		CONFIG_hymod		CONFIG_PM826
+		CONFIG_ADCIOP		CONFIG_FPS860L		CONFIG_OXC
+		CONFIG_ADS860		CONFIG_GEN860T		CONFIG_PCI405
+		CONFIG_AMX860		CONFIG_GENIETV		CONFIG_PCIPPC2
+		CONFIG_AP1000		CONFIG_GTH		CONFIG_PCIPPC6
+		CONFIG_AR405		CONFIG_gw8260		CONFIG_pcu_e
+		CONFIG_BAB7xx		CONFIG_hermes		CONFIG_PIP405
+		CONFIG_BC3450		CONFIG_hymod		CONFIG_PM826
 		CONFIG_c2mon		CONFIG_IAD210		CONFIG_ppmc8260
 		CONFIG_CANBT		CONFIG_ICU862		CONFIG_QS823
 		CONFIG_CCM		CONFIG_IP860		CONFIG_QS850
@@ -299,19 +300,19 @@ The following options need to be configured:
 		CONFIG_FADS860T		CONFIG_NX823		CONFIG_WALNUT
 		CONFIG_FLAGADM		CONFIG_OCRTC		CONFIG_ZPC1900
 		CONFIG_FPS850L		CONFIG_ORSG		CONFIG_ZUMA
-		CONFIG_FPS860L		CONFIG_OXC
 
 		ARM based boards:
 		-----------------
 
 		CONFIG_ARMADILLO,	CONFIG_AT91RM9200DK,	CONFIG_CERF250,
 		CONFIG_CSB637,		CONFIG_DELTA,		CONFIG_DNP1110,
-	 	CONFIG_EP7312,		CONFIG_H2_OMAP1610,	CONFIG_HHP_CRADLE,
-		CONFIG_IMPA7,		CONFIG_INNOVATOROMAP1510, CONFIG_INNOVATOROMAP1610, 
+		CONFIG_EP7312,		CONFIG_H2_OMAP1610,	CONFIG_HHP_CRADLE,
+		CONFIG_IMPA7,	    CONFIG_INNOVATOROMAP1510,	CONFIG_INNOVATOROMAP1610,
 		CONFIG_KB9202,		CONFIG_LART,		CONFIG_LPD7A400,
 		CONFIG_LUBBOCK,		CONFIG_OSK_OMAP5912,	CONFIG_OMAP2420H4,
-		CONFIG_SHANNON,		CONFIG_P2_OMAP730,	CONFIG_SMDK2400,
-		CONFIG_SMDK2410,	CONFIG_TRAB,		CONFIG_VCMA9
+		CONFIG_PLEB2,		CONFIG_SHANNON,		CONFIG_P2_OMAP730,
+		CONFIG_SMDK2400,	CONFIG_SMDK2410,	CONFIG_TRAB,
+		CONFIG_VCMA9
 
 		MicroBlaze based boards:
 		------------------------
@@ -322,6 +323,7 @@ The following options need to be configured:
 		------------------------
 
 		CONFIG_PCI5441 CONFIG_PK1C20
+		CONFIG_EP1C20 CONFIG_EP1S10 CONFIG_EP1S40
 
 
 - CPU Module Type: (if CONFIG_COGENT is defined)
@@ -388,12 +390,12 @@ The following options need to be configured:
 		frequency is this value multiplied by 13 MHz.
 
 		CFG_MONAHANS_TURBO_RUN_MODE_RATIO
-		
+
 		Defines the Monahans turbo mode to oscillator
 		ratio. Valid values are 1 (default if undefined) and
-		2. The core frequency as calculated above is multiplied 
+		2. The core frequency as calculated above is multiplied
 		by this value.
-		
+
 - Linux Kernel Interface:
 		CONFIG_CLOCKS_IN_MHZ
 
@@ -1488,6 +1490,12 @@ The following options need to be configured:
 		of the backslashes before semicolons and special
 		symbols.
 
+- Commandline Editing and History:
+		CONFIG_CMDLINE_EDITING
+
+		Enable editiong and History functions for interactive
+		commandline input operations
+
 - Default Environment:
 		CONFIG_EXTRA_ENV_SETTINGS
 
@@ -2315,6 +2323,26 @@ images ready for download to / installation on your system:
 - "u-boot" is an image in ELF binary format
 - "u-boot.srec" is in Motorola S-Record format
 
+By default the build is performed locally and the objects are saved
+in the source directory. One of the two methods can be used to change
+this behavior and build U-Boot to some external directory:
+
+1. Add O= to the make command line invocations:
+
+	make O=/tmp/build distclean
+	make O=/tmp/build NAME_config
+	make O=/tmp/build all
+
+2. Set environment variable BUILD_DIR to point to the desired location:
+
+	export BUILD_DIR=/tmp/build
+	make distclean
+	make NAME_config
+	make all
+
+Note that the command line "O=" setting overrides the BUILD_DIR environment
+variable.
+
 
 Please be aware that the Makefiles assume you are using GNU make, so
 for instance on NetBSD you might need to use "gmake" instead of
@@ -2367,6 +2395,22 @@ MontaVista's Hard Hat Linux you can type
 or to build on a native PowerPC system you can type
 
 	CROSS_COMPILE=' ' MAKEALL
+
+When using the MAKEALL script, the default behaviour is to build U-Boot
+in the source directory. This location can be changed by setting the
+BUILD_DIR environment variable. Also, for each target built, the MAKEALL
+script saves two log files (<target>.ERR and <target>.MAKEALL) in the
+<source dir>/LOG directory. This default location can be changed by
+setting the MAKEALL_LOGDIR environment variable. For example:
+
+	export BUILD_DIR=/tmp/build
+	export MAKEALL_LOGDIR=/tmp/log
+	CROSS_COMPILE=ppc_8xx- MAKEALL
+
+With the above settings build objects are saved in the /tmp/build, log
+files are saved in the /tmp/log and the source tree remains clean during
+the whole build process.
+
 
 See also "U-Boot Porting Guide" below.
 
@@ -3461,12 +3505,19 @@ Coding Standards:
 -----------------
 
 All contributions to U-Boot should conform to the Linux kernel
-coding style; see the file "Documentation/CodingStyle" in your Linux
-kernel source directory.
+coding style; see the file "Documentation/CodingStyle" and the script
+"scripts/Lindent" in your Linux kernel source directory.  In sources
+originating from U-Boot a style corresponding to "Lindent -pcs" (adding
+spaces before parameters to function calls) is actually used.
 
-Please note that U-Boot is implemented in C (and to some small parts
-in Assembler); no C++ is used, so please do not use C++ style
-comments (//) in your code.
+Source files originating from a different project (for example the
+MTD subsystem) are generally exempt from these guidelines and are not
+reformated to ease subsequent migration to newer versions of those
+sources.
+
+Please note that U-Boot is implemented in C (and to some small parts in
+Assembler); no C++ is used, so please do not use C++ style comments (//)
+in your code.
 
 Please also stick to the following formatting rules:
 - remove any trailing white space

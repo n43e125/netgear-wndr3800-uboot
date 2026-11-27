@@ -158,7 +158,7 @@
 #undef  CONFIG_CONS_NONE        /* define if console on something else */
 #define CONFIG_CONS_INDEX       1  /* which serial channel for console */
 
-#else
+#else	/* ! TQM8560 */
 
 #define CONFIG_CONS_INDEX     1
 #undef	CONFIG_SERIAL_SOFTWARE_FIFO
@@ -169,6 +169,15 @@
 
 #define CFG_NS16550_COM1	(CFG_CCSRBAR+0x4500)
 #define CFG_NS16550_COM2	(CFG_CCSRBAR+0x4600)
+
+/* PS/2 Keyboard */
+#if !defined(CONFIG_TQM8560)
+#define CONFIG_PS2KBD			/* AT-PS/2 Keyboard		*/
+#define CONFIG_PS2MULT			/* .. on PS/2 Multiplexer	*/
+#define CONFIG_PS2SERIAL	2	/* .. on DUART2			*/
+#define CONFIG_PS2MULT_DELAY	(CFG_HZ/2)	/* Initial delay	*/
+#define CONFIG_BOARD_EARLY_INIT_R	1
+#endif /* !CONFIG_TQM8560 */
 
 #endif /* CONFIG_TQM8560 */
 
@@ -415,7 +424,7 @@
 #define CONFIG_BOOTDELAY 5		/* -1 disables auto-boot	*/
 
 #define CONFIG_PREBOOT	"echo;"	\
-	"echo Type \"run flash_nfs\" to mount root filesystem over NFS;" \
+	"echo Type \\\"run flash_nfs\\\" to mount root filesystem over NFS;" \
 	"echo"
 
 #undef	CONFIG_BOOTARGS		/* the boot command will set bootargs	*/
@@ -440,7 +449,7 @@
 		"run nfsargs addip addcons;bootm\0"			\
 	"rootpath=/opt/eldk/ppc_85xx\0"					\
 	"kernel_addr=FE000000\0"					\
-	"ramdisk_addr=FE100000\0"					\
+	"ramdisk_addr=FE180000\0"					\
 	"load=tftp 100000 /tftpboot/$hostname/u-boot.bin\0"		\
 	"update=protect off fffc0000 ffffffff;era fffc0000 ffffffff;"	\
 		"cp.b 100000 fffc0000 40000;"			        \

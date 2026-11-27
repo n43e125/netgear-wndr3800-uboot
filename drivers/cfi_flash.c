@@ -793,6 +793,7 @@ static int flash_status_check (flash_info_t * info, flash_sect_t sector,
 			flash_write_cmd (info, sector, 0, info->cmd_reset);
 			return ERR_TIMOUT;
 		}
+		udelay (1);		/* also triggers watchdog */
 	}
 	return ERR_OK;
 }

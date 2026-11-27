@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2000-2004
+ * (C) Copyright 2000-2006
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
@@ -270,7 +270,8 @@ init_fnc_t *init_sequence[] = {
 
 #if !defined(CONFIG_8xx_CPUCLK_DEFAULT)
 	get_clocks,		/* get CPU and bus clocks (etc.) */
-#if defined(CONFIG_TQM8xxL) && !defined(CONFIG_TQM866M)
+#if defined(CONFIG_TQM8xxL) && !defined(CONFIG_TQM866M) \
+    && !defined(CONFIG_TQM885D)
 	adjust_sdram_tbs_8xx,
 #endif
 	init_timebase,
@@ -610,6 +611,11 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	bd = gd->bd;
 
 	gd->flags |= GD_FLG_RELOC;	/* tell others: relocation done */
+	gd->reloc_off = dest_addr - CFG_MONITOR_BASE;
+
+#ifdef CONFIG_SERIAL_MULTI
+	serial_initialize();
+#endif
 
 	debug ("Now running in RAM - U-Boot at: %08lx\n", dest_addr);
 
@@ -619,13 +625,7 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	board_early_init_r ();
 #endif
 
-	gd->reloc_off = dest_addr - CFG_MONITOR_BASE;
-
 	monitor_flash_len = (ulong)&__init_end - dest_addr;
-
-#ifdef CONFIG_SERIAL_MULTI
-	serial_initialize();
-#endif
 
 	/*
 	 * We have to relocate the command table manually
@@ -763,6 +763,12 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	spi_init_r ();
 #endif
 
+#if (CONFIG_COMMANDS & CFG_CMD_NAND)
+	WATCHDOG_RESET ();
+	puts ("NAND:  ");
+	nand_init();		/* go init the NAND */
+#endif
+
 	/* relocate environment function pointers etc. */
 	env_relocate ();
 
@@ -799,7 +805,10 @@ void board_init_r (gd_t *id, ulong dest_addr)
 #endif	/* CFG_EXTBDINFO */
 
 	s = getenv ("ethaddr");
-#if defined (CONFIG_MBX) || defined (CONFIG_RPXCLASSIC) || defined(CONFIG_IAD210)
+#if defined (CONFIG_MBX) || \
+    defined (CONFIG_RPXCLASSIC) || \
+    defined(CONFIG_IAD210) || \
+    defined(CONFIG_V38B)
 	if (s == NULL)
 		board_get_enetaddr (bd->bi_enetaddr);
 	else
@@ -957,12 +966,6 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	WATCHDOG_RESET ();
 	puts ("DOC:   ");
 	doc_init ();
-#endif
-
-#if (CONFIG_COMMANDS & CFG_CMD_NAND)
-	WATCHDOG_RESET ();
-	puts ("NAND:  ");
-	nand_init();		/* go init the NAND */
 #endif
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)

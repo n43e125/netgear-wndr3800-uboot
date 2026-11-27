@@ -315,7 +315,6 @@ void pci_405gp_init(struct pci_controller *hose)
 #ifdef CONFIG_PCI_SCAN_SHOW
 		printf("PCI:   Bus Dev VenId DevId Class Int\n");
 #endif
-
 		hose->last_busno = pci_hose_scan(hose);
 	}
 #endif  /* CONFIG_PCI_PNP */
@@ -438,7 +437,7 @@ void pci_440_init (struct pci_controller *hose)
 	 * The PCI initialization sequence enable bit must be set ... if not abort
 	 * pci setup since updating the bit requires chip reset.
 	 *--------------------------------------------------------------------------*/
-#if defined(CONFIG_440GX) || defined(CONFIG_440SP)
+#if defined(CONFIG_440GX) || defined(CONFIG_440SP) || defined(CONFIG_440SPE)
 	unsigned long strap;
 
 	mfsdr(sdr_sdstp1,strap);
@@ -465,17 +464,30 @@ void pci_440_init (struct pci_controller *hose)
 	hose->first_busno = 0;
 	hose->last_busno = 0xff;
 
+	/* PCI I/O space */
 	pci_set_region(hose->regions + reg_num++,
 		       0x00000000,
 		       PCIX0_IOBASE,
 		       0x10000,
 		       PCI_REGION_IO);
 
+	/* PCI memory space */
 	pci_set_region(hose->regions + reg_num++,
 		       CFG_PCI_TARGBASE,
 		       CFG_PCI_MEMBASE,
 		       0x10000000,
 		       PCI_REGION_MEM );
+
+#if defined(CONFIG_PCI_SYS_MEM_BUS) && defined(CONFIG_PCI_SYS_MEM_PHYS) && \
+	defined(CONFIG_PCI_SYS_MEM_SIZE)
+	/* System memory space */
+	pci_set_region(hose->regions + reg_num++,
+		       CONFIG_PCI_SYS_MEM_BUS,
+		       CONFIG_PCI_SYS_MEM_PHYS,
+		       CONFIG_PCI_SYS_MEM_SIZE,
+		       PCI_REGION_MEM | PCI_REGION_MEMORY );
+#endif
+
 	hose->region_count = reg_num;
 
 	pci_setup_indirect(hose, PCIX0_CFGADR, PCIX0_CFGDATA);
@@ -502,7 +514,7 @@ void pci_440_init (struct pci_controller *hose)
 	out16r( PCIX0_CLS, 0x00060000 ); /* Bridge, host bridge */
 #endif
 
-#if defined(CONFIG_440GX)
+#if defined(CONFIG_440GX) || defined(CONFIG_440SPE)
 	out32r( PCIX0_BRDGOPT1, 0x04000060 );               /* PLB Rq pri highest   */
 	out32r( PCIX0_BRDGOPT2, in32(PCIX0_BRDGOPT2) | 0x83 ); /* Enable host config, clear Timeout, ensure int src1  */
 #elif defined(PCIX0_BRDGOPT1)
@@ -520,8 +532,13 @@ void pci_440_init (struct pci_controller *hose)
 	out32r( PCIX0_POM0SA, 0 ); /* disable */
 	out32r( PCIX0_POM1SA, 0 ); /* disable */
 	out32r( PCIX0_POM2SA, 0 ); /* disable */
+#if defined(CONFIG_440SPE)
+	out32r( PCIX0_POM0LAL, 0x10000000 );
+	out32r( PCIX0_POM0LAH, 0x0000000c );
+#else
 	out32r( PCIX0_POM0LAL, 0x00000000 );
 	out32r( PCIX0_POM0LAH, 0x00000003 );
+#endif
 	out32r( PCIX0_POM0PCIAL, CFG_PCI_MEMBASE );
 	out32r( PCIX0_POM0PCIAH, 0x00000000 );
 	out32r( PCIX0_POM0SA, 0xf0000001 ); /* 256MB, enabled */
@@ -538,17 +555,20 @@ void pci_440_init (struct pci_controller *hose)
 #ifdef CONFIG_PCI_SCAN_SHOW
 		printf("PCI:   Bus Dev VenId DevId Class Int\n");
 #endif
-#if !defined(CONFIG_440EP) && !defined(CONFIG_440GR)
+#if !defined(CONFIG_440EP) && !defined(CONFIG_440GR) && \
+    !defined(CONFIG_440EPX) && !defined(CONFIG_440GRX)
 		out16r( PCIX0_CMD, in16r( PCIX0_CMD ) | PCI_COMMAND_MASTER);
 #endif
 		hose->last_busno = pci_hose_scan(hose);
 	}
 }
 
-
 void pci_init_board(void)
 {
 	pci_440_init (&ppc440_hose);
+#if defined(CONFIG_440SPE)
+	pcie_setup_hoses();
+#endif
 }
 
 #endif /* CONFIG_440 & CONFIG_PCI */

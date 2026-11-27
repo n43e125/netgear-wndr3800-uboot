@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2005
+ * (C) Copyright 2005-2006
  * Stefan Roese, DENX Software Engineering, sr@denx.de.
  *
  * See file CREDITS for list of people who contributed to this
@@ -65,6 +65,7 @@
 /*-----------------------------------------------------------------------
  * Initial RAM & stack pointer (placed in SDRAM)
  *----------------------------------------------------------------------*/
+#define CFG_INIT_RAM_DCACHE	1		/* d-cache as init ram	*/
 #define CFG_INIT_RAM_ADDR	0x70000000		/* DCache       */
 #define CFG_INIT_RAM_END	(8 << 10)
 #define CFG_GBL_DATA_SIZE	256			/* num bytes initial data*/
@@ -108,6 +109,8 @@
 
 #define CFG_FLASH_ERASE_TOUT	120000	/* Timeout for Flash Erase (in ms)	*/
 #define CFG_FLASH_WRITE_TOUT	500	/* Timeout for Flash Write (in ms)	*/
+
+#define CFG_FLASH_USE_BUFFER_WRITE 1	/* use buffered writes (20x faster)	*/
 
 #define CFG_FLASH_EMPTY_INFO		/* print 'E' for empty sector on flinfo */
 
@@ -174,7 +177,7 @@
 	"rootpath=/opt/eldk/ppc_4xx\0"					\
 	"bootfile=/tftpboot/yellowstone/uImage\0"			\
 	"kernel_addr=fc000000\0"					\
-	"ramdisk_addr=fc100000\0"					\
+	"ramdisk_addr=fc180000\0"					\
 	"load=tftp 100000 /tftpboot/yellowstone/u-boot.bin\0"		\
 	"update=protect off fff80000 ffffffff;era fff80000 ffffffff;"	\
 		"cp.b 100000 fff80000 80000;"			        \
@@ -229,6 +232,7 @@
 				CFG_CMD_DHCP	| \
 				CFG_CMD_DIAG	| \
 				CFG_CMD_ELF	| \
+				CFG_CMD_EEPROM	| \
 				CFG_CMD_I2C	| \
 				CFG_CMD_IRQ	| \
 				CFG_CMD_MII	| \
@@ -264,6 +268,12 @@
 #define CONFIG_LYNXKDI          1       /* support kdi files            */
 
 #define CFG_HZ		        1000	/* decrementer freq: 1 ms ticks */
+
+#define CONFIG_CMDLINE_EDITING	1	/* add command line history	*/
+#define CONFIG_LOOPW            1       /* enable loopw command         */
+#define CONFIG_MX_CYCLIC        1       /* enable mdc/mwc commands      */
+#define CONFIG_ZERO_BOOTDELAY_CHECK	/* check for keypress on bootdelay==0 */
+#define CONFIG_VERSION_VARIABLE 1	/* include version env variable */
 
 /*-----------------------------------------------------------------------
  * PCI stuff

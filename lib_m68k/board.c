@@ -261,6 +261,7 @@ board_init_f (ulong bootflag)
 {
 	bd_t *bd;
 	ulong len, addr, addr_sp;
+	ulong *paddr;
 	gd_t *id;
 	init_fnc_t **init_fnc_ptr;
 #ifdef CONFIG_PRAM
@@ -357,8 +358,12 @@ board_init_f (ulong bootflag)
 	 */
 	addr_sp -= 16;
 	addr_sp &= ~0xF;
-	*((ulong *) addr_sp)-- = 0;
-	*((ulong *) addr_sp)-- = 0;
+
+	paddr = (ulong *)addr_sp;
+	*paddr-- = 0;
+	*paddr-- = 0;
+	addr_sp = (ulong)paddr;
+
 	debug ("Stack Pointer at: %08lx\n", addr_sp);
 
 	/*
@@ -631,7 +636,7 @@ void board_init_r (gd_t *id, ulong dest_addr)
 
 #if (CONFIG_COMMANDS & CFG_CMD_NAND)
 	WATCHDOG_RESET ();
-	puts ("NAND:");
+	puts ("NAND:  ");
 	nand_init();		/* go init the NAND */
 #endif
 

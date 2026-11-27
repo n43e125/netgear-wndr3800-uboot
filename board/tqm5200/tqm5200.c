@@ -1,11 +1,11 @@
 /*
- * (C) Copyright 2003-2004
+ * (C) Copyright 2003-2006
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
  *
  * (C) Copyright 2004
  * Mark Jonas, Freescale Semiconductor, mark.jonas@motorola.com.
  *
- * (C) Copyright 2004-2005
+ * (C) Copyright 2004-2006
  * Martin Krause, TQ-Systems GmbH, martin.krause@tqs.de
  *
  * See file CREDITS for list of people who contributed to this
@@ -30,6 +30,7 @@
 #include <common.h>
 #include <mpc5xxx.h>
 #include <pci.h>
+#include <asm/processor.h>
 
 #ifdef CONFIG_VIDEO_SM501
 #include <sm501.h>
@@ -101,6 +102,8 @@ long int initdram (int board_type)
 {
 	ulong dramsize = 0;
 	ulong dramsize2 = 0;
+	uint svr, pvr;
+
 #ifndef CFG_RAMBOOT
 	ulong test1, test2;
 
@@ -190,11 +193,31 @@ long int initdram (int board_type)
 	} else {
 		dramsize2 = 0;
 	}
-
 #endif /* CFG_RAMBOOT */
 
-/*	return dramsize + dramsize2; */
+	/*
+	 * On MPC5200B we need to set the special configuration delay in the
+	 * DDR controller. Please refer to Freescale's AN3221 "MPC5200B SDRAM
+	 * Initialization and Configuration", 3.3.1 SDelay--MBAR + 0x0190:
+	 *
+	 * "The SDelay should be written to a value of 0x00000004. It is
+	 * required to account for changes caused by normal wafer processing
+	 * parameters."
+	 */
+	svr = get_svr();
+	pvr = get_pvr();
+	if ((SVR_MJREV(svr) >= 2) &&
+	    (PVR_MAJ(pvr) == 1) && (PVR_MIN(pvr) == 4)) {
+
+		*(vu_long *)MPC5XXX_SDRAM_SDELAY = 0x04;
+		__asm__ volatile ("sync");
+	}
+
+#if defined(CONFIG_TQM5200_B)
+	return dramsize + dramsize2;
+#else
 	return dramsize;
+#endif /* CONFIG_TQM5200_B */
 }
 
 #elif defined(CONFIG_MGT5100)
@@ -250,25 +273,37 @@ long int initdram (int board_type)
 
 int checkboard (void)
 {
-#if defined (CONFIG_AEVFIFO)
+#if defined(CONFIG_AEVFIFO)
 	puts ("Board: AEVFIFO\n");
 	return 0;
 #endif
-#if defined (CONFIG_TQM5200_AA)
-	puts ("Board: TQM5200-AA (TQ-Components GmbH)\n");
-#elif defined (CONFIG_TQM5200_AB)
-	puts ("Board: TQM5200-AB (TQ-Components GmbH)\n");
-#elif defined (CONFIG_TQM5200_AC)
-	puts ("Board: TQM5200-AC (TQ-Components GmbH)\n");
-#elif defined (CONFIG_TQM5200)
-	puts ("Board: TQM5200 (TQ-Components GmbH)\n");
+
+#if defined(CONFIG_TQM5200S)
+# define MODULE_NAME	"TQM5200S"
+#else
+# define MODULE_NAME	"TQM5200"
 #endif
-#if defined (CONFIG_STK52XX)
-	puts ("       on a STK52XX baseboard\n");
+
+#if defined(CONFIG_STK52XX)
+# define CARRIER_NAME	"STK52xx"
+#elif defined(CONFIG_TB5200)
+# define CARRIER_NAME	"TB5200"
+#elif defined(CONFIG_CAM5200)
+# define CARRIER_NAME	"Cam5200"
+#elif defined(CONFIG_FO300)
+# define CARRIER_NAME	"FO300"
+#else
+# error "UNKNOWN"
 #endif
+
+	puts (	"Board: " MODULE_NAME " (TQ-Components GmbH)\n"
+		"       on a " CARRIER_NAME " carrier board\n");
 
 	return 0;
 }
+
+#undef MODULE_NAME
+#undef CARRIER_NAME
 
 void flash_preinit(void)
 {
@@ -361,6 +396,7 @@ void ide_set_reset (int idereset)
  */
 int post_hotkeys_pressed(void)
 {
+#ifdef CONFIG_STK52XX
 	struct mpc5xxx_gpio *gpio;
 
 	gpio = (struct mpc5xxx_gpio*) MPC5XXX_GPIO;
@@ -379,6 +415,9 @@ int post_hotkeys_pressed(void)
 	gpio->simple_ddr &= ~(0x20000000);
 
 	return ((gpio->simple_ival & 0x20000000) ? 0 : 1);
+#else
+	return 0;
+#endif
 }
 #endif
 
@@ -411,7 +450,43 @@ int board_early_init_r (void)
 #endif
 #endif /* CONFIG_PS2MULT */
 
-#if defined(CONFIG_CS_AUTOCONF)
+#ifdef CONFIG_FO300
+int silent_boot (void)
+{
+	vu_long timer3_status;
+
+	/* Configure GPT3 as GPIO input */
+	*(vu_long *)MPC5XXX_GPT3_ENABLE = 0x00000004;
+
+	/* Read in TIMER_3 pin status */
+	timer3_status = *(vu_long *)MPC5XXX_GPT3_STATUS;
+
+#ifdef FO300_SILENT_CONSOLE_WHEN_S1_CLOSED
+	/* Force silent console mode if S1 switch
+	 * is in closed position (TIMER_3 pin status is LOW). */
+	if (MPC5XXX_GPT_GPIO_PIN(timer3_status) == 0)
+		return 1;
+#else
+	/* Force silent console mode if S1 switch
+	 * is in open position (TIMER_3 pin status is HIGH). */
+	if (MPC5XXX_GPT_GPIO_PIN(timer3_status) == 1)
+		return 1;
+#endif
+
+	return 0;
+}
+
+int board_early_init_f (void)
+{
+	DECLARE_GLOBAL_DATA_PTR;
+
+	if (silent_boot())
+		gd->flags |= GD_FLG_SILENT;
+
+	return 0;
+}
+#endif	/* CONFIG_FO300 */
+
 int last_stage_init (void)
 {
 	/*
@@ -504,13 +579,23 @@ int last_stage_init (void)
 		__asm__ volatile ("sync");
 	}
 
+#ifdef CONFIG_FO300
+	if (silent_boot()) {
+		setenv("bootdelay", "0");
+		disable_ctrlc(1);
+	}
+#endif
+
 	return 0;
 }
-#endif /* CONFIG_CS_AUTOCONF */
 
 #ifdef CONFIG_VIDEO_SM501
 
+#ifdef CONFIG_FO300
+#define DISPLAY_WIDTH   800
+#else
 #define DISPLAY_WIDTH   640
+#endif
 #define DISPLAY_HEIGHT  480
 
 #ifdef CONFIG_VIDEO_SM501_8BPP
@@ -540,6 +625,28 @@ static const SMI_REGS init_regs [] =
 	{0x80218, 0x000201e9},
 	{0x80200, 0x00013306},
 #else  /* panel + CRT */
+#ifdef CONFIG_FO300
+	{0x00004, 0x0},
+	{0x00048, 0x00021807},
+	{0x0004C, 0x301a0a01},
+	{0x00054, 0x1},
+	{0x00040, 0x00021807},
+	{0x00044, 0x091a0a01},
+	{0x00054, 0x0},
+	{0x80000, 0x0f013106},
+	{0x80004, 0xc428bb17},
+	{0x8000C, 0x00000000},
+	{0x80010, 0x0C800C80},
+	{0x80014, 0x03200000},
+	{0x80018, 0x01e00000},
+	{0x8001C, 0x00000000},
+	{0x80020, 0x01e00320},
+	{0x80024, 0x042a031f},
+	{0x80028, 0x0086034a},
+	{0x8002C, 0x020c01df},
+	{0x80030, 0x000201ea},
+	{0x80200, 0x00010000},
+#else
 	{0x00004, 0x0},
 	{0x00048, 0x00021807},
 	{0x0004C, 0x091a0a01},
@@ -560,6 +667,7 @@ static const SMI_REGS init_regs [] =
 	{0x8002C, 0x020c01df},
 	{0x80030, 0x000201e9},
 	{0x80200, 0x00010000},
+#endif /* #ifdef CONFIG_FO300 */
 #endif
 	{0, 0}
 };
@@ -572,20 +680,18 @@ static const SMI_REGS init_regs [] =
 void video_get_info_str (int line_number, char *info)
 {
 	if (line_number == 1) {
-#if defined (CONFIG_TQM5200_AA)
-		strcpy (info, " Board: TQM5200-AA (TQ-Components GmbH)");
-#elif defined (CONFIG_TQM5200_AB)
-		strcpy (info, " Board: TQM5200-AB (TQ-Components GmbH)");
-#elif defined (CONFIG_TQM5200_AC)
-		strcpy (info, " Board: TQM5200-AC (TQ-Components GmbH)");
-#elif defined (CONFIG_TQM5200)
-		strcpy (info, " Board: TQM5200 (TQ-Components GmbH)");
-#else
-#error No supported board selected
-#endif
-#if defined (CONFIG_STK52XX)
+	strcpy (info, " Board: TQM5200 (TQ-Components GmbH)");
+#if defined (CONFIG_STK52XX) || defined (CONFIG_TB5200) || defined(CONFIG_FO300)
 	} else if (line_number == 2) {
-		strcpy (info, "        on a STK52XX baseboard");
+#if defined (CONFIG_STK52XX)
+		strcpy (info, "        on a STK52xx carrier board");
+#endif
+#if defined (CONFIG_TB5200)
+		strcpy (info, "        on a TB5200 carrier board");
+#endif
+#if defined (CONFIG_FO300)
+		strcpy (info, "        on a FO300 carrier board");
+#endif
 #endif
 	}
 	else {

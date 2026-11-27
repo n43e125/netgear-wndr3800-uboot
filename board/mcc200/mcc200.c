@@ -28,7 +28,16 @@
 #include <mpc5xxx.h>
 #include <pci.h>
 
-#include "mt48lc8m32b2-6-7.h"
+/* Two MT48LC8M32B2 for 32 MB */
+/* #include "mt48lc8m32b2-6-7.h" */
+
+/* One MT48LC16M32S2 for 64 MB */
+/* #include "mt48lc16m32s2-75.h" */
+#if defined (CONFIG_MCC200_SDRAM)
+#include "mt48lc16m16a2-75.h"
+#else
+#include "mt46v16m16-75.h"
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -74,6 +83,8 @@ static void sdram_start (int hi_addr)
 	/* normal operation */
 	*(vu_long *)MPC5XXX_SDRAM_CTRL = SDRAM_CONTROL | hi_addr_bit;
 	__asm__ volatile ("sync");
+
+	udelay(10);
 }
 #endif
 
@@ -186,12 +197,18 @@ long int initdram (int board_type)
 
 int checkboard (void)
 {
+#if defined(CONFIG_PRS200)
+	puts ("Board: PRS200\n");
+#else
 	puts ("Board: MCC200\n");
+#endif
 	return 0;
 }
 
 int misc_init_r (void)
 {
+	ulong flash_sup_end, snum;
+
 	/*
 	 * Adjust flash start and offset to detected values
 	 */
@@ -242,10 +259,16 @@ int misc_init_r (void)
 		/* Unprotect the upper bank of the Flash */
 		*(volatile int*)MPC5XXX_CS0_CFG |= (1 << 6);
 		flash_protect (FLAG_PROTECT_CLEAR,
-			       flash_info[0].start[0],
-			       (flash_info[0].start[0] + flash_info[0].size) / 2 - 1,
+			       flash_info[0].start[0] + flash_info[0].size / 2,
+			       (flash_info[0].start[0] - 1) + flash_info[0].size,
 			       &flash_info[0]);
 		*(volatile int*)MPC5XXX_CS0_CFG &= ~(1 << 6);
+		printf ("Warning: Only 32 of 64 MB of Flash are accessible from U-Boot\n");
+		flash_info[0].size = 32 << 20;
+		for (snum = 0, flash_sup_end = gd->bd->bi_flashstart + (32<<20);
+			flash_info[0].start[snum] < flash_sup_end;
+			snum++);
+		flash_info[0].sector_count = snum;
 	}
 
 	return (0);

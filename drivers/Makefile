@@ -1,5 +1,5 @@
 #
-# (C) Copyright 2000-2004
+# (C) Copyright 2000-2006
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
 # See file CREDITS for list of people who contributed to this
@@ -25,13 +25,13 @@ include $(TOPDIR)/config.mk
 
 # CFLAGS += -DET_DEBUG -DDEBUG
 
-LIB	= libdrivers.a
+LIB	= $(obj)libdrivers.a
 
-OBJS	= 3c589.o 5701rls.o ali512x.o \
+COBJS	= 3c589.o 5701rls.o ali512x.o \
 	  bcm570x.o bcm570x_autoneg.o cfb_console.o cfi_flash.o \
 	  cs8900.o ct69000.o dataflash.o dc2114x.o dm9000x.o \
 	  e1000.o eepro100.o \
-	  i8042.o i82365.o inca-ip_sw.o keyboard.o \
+	  i8042.o inca-ip_sw.o keyboard.o \
 	  lan91c96.o \
 	  natsemi.o ne2000.o netarm_eth.o netconsole.o \
 	  ns16550.o ns8382x.o ns87308.o ns7520_eth.o omap1510_i2c.o \
@@ -48,18 +48,23 @@ OBJS	= 3c589.o 5701rls.o ali512x.o \
 	  ti_pci1410a.o tigon3.o tsec.o \
 	  usbdcore.o usbdcore_ep0.o usbdcore_omap1510.o usbtty.o \
 	  videomodes.o w83c553f.o \
-	  ks8695eth.o
+	  ks8695eth.o \
+	  pxa_pcmcia.o mpc8xx_pcmcia.o tqm8xx_pcmcia.o	\
+	  rpx_pcmcia.o
+
+SRCS	:= $(COBJS:.o=.c)
+OBJS	:= $(addprefix $(obj),$(COBJS))
 
 all:	$(LIB)
 
-$(LIB): $(OBJS)
-	$(AR) crv $@ $(OBJS)
+$(LIB): $(obj).depend $(OBJS)
+	$(AR) $(ARFLAGS) $@ $(OBJS)
 
 #########################################################################
 
-.depend:	Makefile $(OBJS:.o=.c)
-		$(CC) -M $(CFLAGS) $(OBJS:.o=.c) > $@
+# defines $(obj).depend target
+include $(SRCTREE)/rules.mk
 
-sinclude .depend
+sinclude $(obj).depend
 
 #########################################################################

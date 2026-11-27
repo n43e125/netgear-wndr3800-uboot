@@ -59,7 +59,9 @@
      defined(CONFIG_TQM8xxL)	|| \
      defined(CONFIG_RRVISION)	|| \
      defined(CONFIG_TRAB)   	|| \
-     defined(CONFIG_PPCHAMELEONEVB) )	&& \
+     defined(CONFIG_PPCHAMELEONEVB) || \
+     defined(CONFIG_M5271EVB)	|| \
+     defined(CONFIG_NAND_U_BOOT))	&& \
      defined(ENV_CRC) /* Environment embedded in U-Boot .ppcenv section */
 /* XXX - This only works with GNU C */
 #  define __PPCENV__ __attribute__ ((section(".ppcenv")))

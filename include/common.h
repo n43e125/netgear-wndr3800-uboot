@@ -109,6 +109,12 @@ typedef volatile unsigned char	vu_char;
 #define debugX(level,fmt,args...)
 #endif	/* DEBUG */
 
+#define BUG() do { \
+	printf("BUG: failure at %s:%d/%s()!\n", __FILE__, __LINE__, __FUNCTION__); \
+	panic("BUG!"); \
+} while (0)
+#define BUG_ON(condition) do { if (unlikely((condition)!=0)) BUG(); } while(0)
+
 typedef void (interrupt_handler_t)(void *);
 
 #include <asm/u-boot.h> /* boot information for Linux kernel */
@@ -116,12 +122,13 @@ typedef void (interrupt_handler_t)(void *);
 
 /*
  * enable common handling for all TQM8xxL/M boards:
- * - CONFIG_TQM8xxM will be defined for all TQM8xxM boards
+ * - CONFIG_TQM8xxM will be defined for all TQM8xxM and TQM885D boards
  * - CONFIG_TQM8xxL will be defined for all TQM8xxL _and_ TQM8xxM boards
  */
 #if defined(CONFIG_TQM823M) || defined(CONFIG_TQM850M) || \
     defined(CONFIG_TQM855M) || defined(CONFIG_TQM860M) || \
-    defined(CONFIG_TQM862M) || defined(CONFIG_TQM866M)
+    defined(CONFIG_TQM862M) || defined(CONFIG_TQM866M) || \
+    defined(CONFIG_TQM885D)
 # ifndef CONFIG_TQM8xxM
 #  define CONFIG_TQM8xxM
 # endif
@@ -252,6 +259,9 @@ void	pciinfo	      (int, int);
 	void	pci_master_init	     (struct pci_controller *);
 #   endif
     int	    is_pci_host		(struct pci_controller *);
+#if defined(CONFIG_440SPE)
+   void pcie_setup_hoses(void);
+#endif
 #endif
 
 int	misc_init_f   (void);
@@ -323,7 +333,8 @@ void	board_ether_init (void);
 
 #if defined(CONFIG_RPXCLASSIC)	|| defined(CONFIG_MBX) || \
     defined(CONFIG_IAD210)	|| defined(CONFIG_XPEDITE1K) || \
-    defined(CONFIG_METROBOX)    || defined(CONFIG_KAREF)
+    defined(CONFIG_METROBOX)    || defined(CONFIG_KAREF) || \
+    defined(CONFIG_V38B)
 void	board_get_enetaddr (uchar *addr);
 #endif
 
@@ -479,6 +490,11 @@ void	get_sys_info  ( sys_info_t * );
 #if defined(CONFIG_4xx) || defined(CONFIG_IOP480)
 #  if defined(CONFIG_440)
     typedef PPC440_SYS_INFO sys_info_t;
+#	if defined(CONFIG_440SPE)
+	 unsigned long determine_sysper(void);
+	 unsigned long determine_pci_clock_per(void);
+	 int ppc440spe_revB(void);
+#	endif
 #  else
     typedef PPC405_SYS_INFO sys_info_t;
 #  endif
@@ -615,7 +631,7 @@ void	show_boot_progress (int status);
 #endif
 
 #ifdef CONFIG_INIT_CRITICAL
-#error CONFIG_INIT_CRITICAL is depracted!
+#error CONFIG_INIT_CRITICAL is deprecated!
 #error Read section CONFIG_SKIP_LOWLEVEL_INIT in README.
 #endif
 

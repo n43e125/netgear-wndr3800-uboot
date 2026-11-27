@@ -23,11 +23,7 @@
 
 #include <common.h>
 
-#ifdef CFG_NAND_LEGACY
-#error CFG_NAND_LEGACY defined in a file not using the legacy NAND support!
-#endif
-
-#if (CONFIG_COMMANDS & CFG_CMD_NAND)
+#if (CONFIG_COMMANDS & CFG_CMD_NAND) && !defined(CFG_NAND_LEGACY)
 
 #include <nand.h>
 
@@ -70,8 +66,15 @@ void nand_init(void)
 		size += nand_info[i].size;
 		if (nand_curr_device == -1)
 			nand_curr_device = i;
-}
+	}
 	printf("%lu MiB\n", size / (1024 * 1024));
+
+#ifdef CFG_NAND_SELECT_DEVICE
+	/*
+	 * Select the chip in the board/cpu specific driver
+	 */
+	board_nand_select_device(nand_info[nand_curr_device].priv, nand_curr_device);
+#endif
 }
 
 #endif

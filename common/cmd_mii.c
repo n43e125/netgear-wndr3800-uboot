@@ -60,6 +60,11 @@ int do_mii (cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 	int		rcode = 0;
 	char		*devname;
 
+	if (argc < 2) {
+		printf ("Usage:\n%s\n", cmdtp->usage);
+		return 1;
+	}
+
 #if defined(CONFIG_8xx) || defined(CONFIG_MCF52x2)
 	mii_init ();
 #endif
@@ -115,8 +120,6 @@ int do_mii (cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 					miiphy_speed (devname, j),
 					(miiphy_duplex (devname, j) == FULL)
 						? "FDX" : "HDX");
-			} else {
-				puts ("Error reading info from the PHY\n");
 			}
 		}
 	} else if (op == 'r') {
@@ -501,8 +504,6 @@ int do_mii (cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 					miiphy_speed (devname, j),
 					(miiphy_duplex (devname, j) == FULL)
 						? "FDX" : "HDX");
-			} else {
-				puts ("Error reading info from the PHY\n");
 			}
 		}
 	} else if (op[0] == 'r') {
