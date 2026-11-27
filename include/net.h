@@ -167,6 +167,8 @@ typedef struct {
 #define PROT_RARP	0x8035		/* IP ARP protocol		*/
 #define PROT_VLAN	0x8100		/* IEEE 802.1q protocol		*/
 
+#define PROT_NMRP       0x0912
+
 #define IPPROTO_ICMP	 1	/* Internet Control Message Protocol	*/
 #define IPPROTO_UDP	17	/* User Datagram Protocol		*/
 
@@ -268,7 +270,11 @@ typedef struct icmphdr {
  * maximum packet size =  1518
  * maximum packet size and multiple of 32 bytes =  1536
  */
+#ifdef CFG_ATHRHDR_EN
+#define PKTSIZE			1520
+#else
 #define PKTSIZE			1518
+#endif
 #define PKTSIZE_ALIGN		1536
 /*#define PKTSIZE		608*/
 
@@ -336,7 +342,44 @@ extern int		NetState;		/* Network loop state		*/
 extern int		NetRestartWrap;		/* Tried all network devices	*/
 #endif
 
-typedef enum { BOOTP, RARP, ARP, TFTP, DHCP, PING, DNS, NFS, CDP, NETCONS, SNTP } proto_t;
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+extern uchar NetOurTftpIP[4];
+extern int NetRunTftpServer;
+extern uchar TftpClientEther[6];    /* TFTP Client enet address      */
+extern IPaddr_t TftpClientIP;       /* Client IP addr (0 = unknown)  */
+extern void StartTftpServerToRecoveFirmware(void);
+#if defined(CFG_NMRP) && (defined(CONFIG_WNR1000V2) || defined(CONFIG_WNR612) || defined(CONFIG_WNR2200) || defined(CONFIG_WNR2000V3))
+extern void UpgradeFirmwareFromNmrpServer(void);
+#endif
+extern void ResetTftpServer(void);
+#endif
+
+#define IP_ADDR_LEN 4
+typedef struct{
+        ushort type;
+
+        ushort len;
+        uchar value;
+}NMRP_OPT;
+typedef struct {
+        ushort reserved;
+        uchar code;
+        uchar id;
+        ushort length;
+        NMRP_OPT opt;
+}nmrp_t;
+extern int NmrpState;
+extern IPaddr_t NmrpClientIP;
+extern uchar NmrpClientEther[6];
+extern uchar NmrpServerEther[6];
+#define NMRP_HDR_LEN (sizeof(nmrp_t) - sizeof(NMRP_OPT))
+#define MIN_ETHER_NMRP_LEN (sizeof(Ethernet_t) + NMRP_HDR_LEN)
+
+#if defined(CFG_ATHRS26_PHY) && defined(CFG_ATHRHDR_EN)
+typedef enum { BOOTP, RARP, ARP, TFTP, DHCP, PING, DNS, NFS, CDP, NETCONS, SNTP, ATHRHDR, NMRP } proto_t;
+#else
+typedef enum { BOOTP, RARP, ARP, TFTP, DHCP, PING, DNS, NFS, CDP, NETCONS, SNTP, NMRP } proto_t;
+#endif
 
 /* from net/net.c */
 extern char	BootFile[128];			/* Boot File name		*/

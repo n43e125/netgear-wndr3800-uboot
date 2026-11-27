@@ -794,7 +794,7 @@ extern int find_first_zero_bit (void *addr, unsigned size);
 #endif /* (__MIPSEB__) */
 
 /* Now for the ext2 filesystem bit operations and helper routines. */
-
+#if !defined(CONFIG_AP121) && !defined(CONFIG_WNR1000V4) && !defined(CONFIG_HW29763847P16P64) && !defined(CONFIG_WASP)
 #ifdef __MIPSEB__
 extern __inline__ int ext2_set_bit(int nr, void * addr)
 {
@@ -908,5 +908,6 @@ found_middle:
 #define minix_test_and_clear_bit(nr,addr) test_and_clear_bit(nr,addr)
 #define minix_test_bit(nr,addr) test_bit(nr,addr)
 #define minix_find_first_zero_bit(addr,size) find_first_zero_bit(addr,size)
+#endif /* !defined(CONFIG_AP121) && !defined(CONFIG_WNR1000V4) && !defined(CONFIG_HW29763847P16P64) && !defined(CONFIG_WASP)*/
 
 #endif /* _ASM_BITOPS_H */

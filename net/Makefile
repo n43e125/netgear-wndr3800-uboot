@@ -27,7 +27,12 @@ include $(TOPDIR)/config.mk
 
 LIB	= libnet.a
 
-OBJS	= net.o tftp.o bootp.o rarp.o eth.o nfs.o sntp.o
+ifeq ($(COMPRESSED_UBOOT),1)
+OBJS	= net.o tftp.o rarp.o eth.o nmrp.o
+else
+OBJS	= net.o tftp.o bootp.o rarp.o eth.o nfs.o sntp.o nmrp.o
+endif
+
 all:	$(LIB)
 
 $(LIB):	$(START) $(OBJS)

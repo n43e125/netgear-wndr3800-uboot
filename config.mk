@@ -89,6 +89,7 @@ endif
 HOSTCFLAGS	= -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer
 HOSTSTRIP	= strip
 
+COMPRESS    = lzma
 #########################################################################
 #
 # Option checker (courtesy linux kernel) to ensure
@@ -112,13 +113,15 @@ OBJDUMP = $(CROSS_COMPILE)objdump
 RANLIB	= $(CROSS_COMPILE)RANLIB
 
 RELFLAGS= $(PLATFORM_RELFLAGS)
-DBGFLAGS= -g #-DDEBUG
+#DBGFLAGS= -g #-DDEBUG
 OPTFLAGS= -Os #-fomit-frame-pointer
 ifndef LDSCRIPT
 #LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/u-boot.lds.debug
 LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/u-boot.lds
 endif
 OBJCFLAGS += --gap-fill=0xff
+
+LDSCRIPT_BOOTSTRAP := $(TOPDIR)/board/$(BOARDDIR)/u-boot-bootstrap.lds
 
 gccincdir := $(shell $(CC) -print-file-name=include)
 
@@ -133,6 +136,12 @@ CFLAGS := $(CPPFLAGS) -Wall -Wstrict-prototypes \
 	-DBUILD_TAG='"$(BUILD_TAG)"'
 else
 CFLAGS := $(CPPFLAGS) -Wall -Wstrict-prototypes
+ifeq ($(COMPRESSED_UBOOT),1)
+CFLAGS += -DCOMPRESSED_UBOOT=1
+endif
+ifeq ($(BUILD_OPTIMIZED),y)
+CFLAGS += -Os -funit-at-a-time -mips32r2 -mtune=mips32r2
+endif
 endif
 
 # avoid trigraph warnings while parsing pci.h (produced by NIOS gcc-2.9)
@@ -146,7 +155,15 @@ endif
 AFLAGS_DEBUG := -Wa,-gstabs
 AFLAGS := $(AFLAGS_DEBUG) -D__ASSEMBLY__ $(CPPFLAGS)
 
+ifeq ($(COMPRESSED_UBOOT),1)
+AFLAGS += -DCOMPRESSED_UBOOT=1
+endif
+
 LDFLAGS += -Bstatic -T $(LDSCRIPT) -Ttext $(TEXT_BASE) $(PLATFORM_LDFLAGS)
+
+ifeq ($(COMPRESSED_UBOOT), 1)
+LDFLAGS_BOOTSTRAP += -Bstatic -T $(LDSCRIPT_BOOTSTRAP) -Ttext $(BOOTSTRAP_TEXT_BASE) $(PLATFORM_LDFLAGS)
+endif
 
 # Location of a usable BFD library, where we define "usable" as
 # "built for ${HOST}, supports ${TARGET}".  Sensible values are
@@ -174,6 +191,8 @@ endif
 ifeq ($(PCI_CLOCK),PCI_66M)
 CFLAGS := $(CFLAGS) -DPCI_66M
 endif
+
+CFLAGS += $(UBOOT_GCC_4_3_3_EXTRA_CFLAGS)
 
 #########################################################################
 

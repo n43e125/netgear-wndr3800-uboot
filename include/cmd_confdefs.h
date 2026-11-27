@@ -89,17 +89,26 @@
 #define CFG_CMD_NFS	0x0080000000000000ULL	/* NFS support			*/
 #define CFG_CMD_REISER	0x0100000000000000ULL	/* Reiserfs support		*/
 #define CFG_CMD_CDP	0x0200000000000000ULL	/* Cisco Discovery Protocol 	*/
+#define CFG_CMD_DDR	0x0400000000000000ULL	/* Change DDR settings	        */
+#define CFG_CMD_FLS     0x0800000000000000ULL	/* Command to change flash size */
+#if !defined(CONFIG_WNR1000V2) && !defined(CONFIG_WNR1100) && !defined(CONFIG_WNR612) && !defined(CONFIG_WNR2200) && !defined(CONFIG_WNR2000V3)
 #define CFG_CMD_XIMG	0x0400000000000000ULL	/* Load part of Multi Image	*/
 #define CFG_CMD_UNIVERSE 0x0800000000000000ULL	/* Tundra Universe Support      */
+#endif
 #define CFG_CMD_EXT2	0x1000000000000000ULL	/* EXT2 Support			*/
+#if !defined(CONFIG_WNR1000V2) && !defined(CONFIG_WNR1100) && !defined(CONFIG_WNR612) && !defined(CONFIG_WNR2200) && !defined(CONFIG_WNR2000V3)
 #define CFG_CMD_SNTP	0x2000000000000000ULL	/* SNTP support			*/
+#endif
+#define CFG_CMD_PLL	0x2000000000000001ULL	/* Change CPU clock speeds      */
 #define CFG_CMD_DISPLAY	0x4000000000000000ULL	/* Display support		*/
+#define CFG_CMD_ETHREG	0x8000000000000000ULL	/* S26 Reg RD/WR utility	*/
 
 #define CFG_CMD_ALL	0xFFFFFFFFFFFFFFFFULL	/* ALL commands			*/
 
 /* Commands that are considered "non-standard" for some reason
  * (memory hogs, requires special hardware, not fully tested, etc.)
  */
+#ifndef COMPRESSED_UBOOT
 #define CFG_CMD_NONSTD (CFG_CMD_ASKENV	| \
 			CFG_CMD_BEDBUG	| \
 			CFG_CMD_BMP	| \
@@ -141,7 +150,70 @@
 			CFG_CMD_SPI	| \
 			CFG_CMD_UNIVERSE | \
 			CFG_CMD_USB	| \
+			CFG_CMD_ETHREG  | \
+			CFG_CMD_PLL	| \
+			CFG_CMD_FLS	| \
+			CFG_CMD_DDR	| \
 			CFG_CMD_VFD	)
+#else
+#define CFG_CMD_NONSTD (CFG_CMD_ASKENV	| \
+			CFG_CMD_BEDBUG	| \
+			CFG_CMD_BDI	| \
+			CFG_CMD_BMP	| \
+			CFG_CMD_BSP	| \
+			CFG_CMD_CACHE	| \
+			CFG_CMD_CDP	| \
+			CFG_CMD_CONSOLE	| \
+			CFG_CMD_DATE	| \
+			CFG_CMD_DHCP	| \
+			CFG_CMD_DIAG	| \
+			CFG_CMD_DISPLAY	| \
+			CFG_CMD_DOC	| \
+			CFG_CMD_DTT	| \
+			CFG_CMD_ECHO	| \
+			CFG_CMD_EEPROM	| \
+			CFG_CMD_ELF	| \
+			CFG_CMD_ENV	| \
+			CFG_CMD_EXT2	| \
+			CFG_CMD_FDC	| \
+			CFG_CMD_FAT	| \
+			CFG_CMD_FDOS	| \
+			CFG_CMD_FPGA	| \
+			CFG_CMD_HWFLOW	| \
+			CFG_CMD_I2C	| \
+			CFG_CMD_IDE	| \
+			CFG_CMD_IMI	| \
+			CFG_CMD_IMLS	| \
+			CFG_CMD_IMMAP	| \
+			CFG_CMD_IRQ	| \
+			CFG_CMD_ITEST	| \
+			CFG_CMD_JFFS2	| \
+			CFG_CMD_KGDB	| \
+			CFG_CMD_LOADB	| \
+			CFG_CMD_LOADS	| \
+			CFG_CMD_MISC	| \
+			CFG_CMD_MMC	| \
+			CFG_CMD_NAND	| \
+			CFG_CMD_NFS	| \
+			CFG_CMD_PCI	| \
+			CFG_CMD_PCMCIA	| \
+			CFG_CMD_PING	| \
+			CFG_CMD_PORTIO	| \
+			CFG_CMD_REGINFO	| \
+			CFG_CMD_REISER	| \
+			CFG_CMD_SAVES	| \
+			CFG_CMD_SCSI	| \
+			CFG_CMD_SETGETDCR	|\
+			CFG_CMD_SDRAM	| \
+			CFG_CMD_SNTP	| \
+			CFG_CMD_SPI	| \
+			CFG_CMD_UNIVERSE	 | \
+			CFG_CMD_USB	| \
+			CFG_CMD_XIMG	| \
+			CFG_CMD_ETHREG	| \
+			CFG_CMD_VFD	)
+
+#endif
 
 /* Default configuration
  */

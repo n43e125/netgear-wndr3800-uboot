@@ -89,6 +89,9 @@
 #if (CONFIG_COMMANDS & CFG_CMD_SNTP)
 #include "sntp.h"
 #endif
+#ifdef CFG_NMRP
+#include "nmrp.h"
+#endif
 
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
 
@@ -121,6 +124,10 @@ ushort		NetBootFileSize=0;		/* Our bootfile size in blocks	*/
 /** END OF BOOTP EXTENTIONS **/
 
 ulong		NetBootFileXferSize;	/* The actual transferred size of the bootfile (in bytes) */
+#ifdef TFTP_RECOVER_MODE_PINGABLE
+uchar		NetPingEther[6];
+IPaddr_t	NetOurPingIP;
+#endif
 uchar		NetOurEther[6];		/* Our ethernet address			*/
 uchar		NetServerEther[6] =	/* Boot server enet address		*/
 			{ 0, 0, 0, 0, 0, 0 };
@@ -148,12 +155,25 @@ static int	NetDevExists = 0;	/* At least one device configured	*/
 ushort		NetOurVLAN = 0xFFFF;		/* default is without VLAN	*/
 ushort		NetOurNativeVLAN = 0xFFFF;	/* ditto			*/
 
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+uchar NetOurTftpIP[4] = { 192, 168, 1, 1 };
+int NetRunTftpServer = 0;
+uchar TftpClientEther[6] = { 0, 0, 0, 0, 0, 0};
+IPaddr_t TftpClientIP = 0;
+extern flash_info_t flash_info[];
+#endif
+
 char		BootFile[128];		/* Boot File name			*/
 
 #if (CONFIG_COMMANDS & CFG_CMD_PING)
 IPaddr_t	NetPingIP;		/* the ip address to ping 		*/
-
+#ifdef TFTP_RECOVER_MODE_PINGABLE
+int MyPingReply(void);
+#endif
 static void PingStart(void);
+#endif
+#if defined(CFG_ATHRS26_PHY) && defined(CFG_ATHRHDR_EN)
+extern void athr_hdr_func(void);
 #endif
 
 #if (CONFIG_COMMANDS & CFG_CMD_CDP)
@@ -175,9 +195,9 @@ volatile uchar	PktBuf[(PKTBUFSRX+1) * PKTSIZE_ALIGN + PKTALIGN];
 volatile uchar *NetRxPackets[PKTBUFSRX]; /* Receive packets			*/
 
 static rxhand_f *packetHandler;		/* Current RX packet handler		*/
-static thand_f *timeHandler;		/* Current timeout handler		*/
-static ulong	timeStart;		/* Time base value			*/
-static ulong	timeDelta;		/* Current timeout value		*/
+thand_f *timeHandler;		/* Current timeout handler		*/
+ulong	timeStart;		/* Time base value			*/
+ulong	timeDelta;		/* Current timeout value		*/
 volatile uchar *NetTxPacket = 0;	/* THE transmit packet			*/
 
 static int net_check_prereq (proto_t protocol);
@@ -269,6 +289,9 @@ int
 NetLoop(proto_t protocol)
 {
 	bd_t *bd = gd->bd;
+#if defined(CFG_ATHRS26_PHY) && defined(CFG_ATHRHDR_EN)
+	static int AthrHdr_Flag = 0;
+#endif
 
 #ifdef CONFIG_NET_MULTI
 	NetRestarted = 0;
@@ -300,15 +323,39 @@ NetLoop(proto_t protocol)
 		NetArpWaitTxPacket -= (ulong)NetArpWaitTxPacket % PKTALIGN;
 		NetArpWaitTxPacketSize = 0;
 	}
-
+#if defined(CFG_ATHRS26_PHY) && defined(CFG_ATHRHDR_EN)
+	if(!AthrHdr_Flag) {
+	        eth_halt();
+		if (eth_init(bd) < 0) {
+            	    eth_halt();
+               	 return(-1);
+        	}
+		AthrHdr_Flag = 1;
+	}
+#else
 	eth_halt();
 #ifdef CONFIG_NET_MULTI
+#if defined(CFG_VITESSE_73XX_NOPHY) || defined(CONFIG_WNR1000V2) || defined(CONFIG_WNR1100) || defined(CONFIG_WNR612) || defined(CONFIG_WNR2200) || defined(CONFIG_WNR2000V3) || defined(CONFIG_WNR1000V4)
+	/*
+	 * There is no PHY in the DNI AP83 board with vitesse switch
+	 * VSC7395XYV, so set the eth1 interface to switch ports, so
+	 * that u-boot can route all the traffic through the switch
+	 * ports.
+	 */
+	/* CONFIG_WNR1000V2 or CONFIG_WNR1100 or WNR612:
+	 * The Lan interface of these projects is eth1,
+	 * so try eth1 first before trying eth0 interface */
+	setenv("ethact", "eth1");
+#else
+        setenv("ethact", "eth0");
+#endif
 	eth_set_current();
 #endif
 	if (eth_init(bd) < 0) {
 		eth_halt();
 		return(-1);
 	}
+#endif
 
 restart:
 #ifdef CONFIG_NET_MULTI
@@ -326,6 +373,15 @@ restart:
 	 */
 
 	switch (protocol) {
+#ifdef CFG_NMRP
+	case NMRP:
+		NetCopyIP(&NetOurIP, NetOurTftpIP);
+		NetOurGatewayIP = getenv_IPaddr ("gatewayip");
+		NetOurSubnetMask= getenv_IPaddr ("netmask");
+		NetOurVLAN = getenv_VLAN("vlan");
+		NetOurNativeVLAN = getenv_VLAN("nvlan");
+		break;
+#endif
 #if (CONFIG_COMMANDS & CFG_CMD_NFS)
 	case NFS:
 #endif
@@ -350,6 +406,14 @@ restart:
 		case NETCONS:
 		case TFTP:
 			NetServerIP = getenv_IPaddr ("serverip");
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+			if(protocol == TFTP && NetRunTftpServer)
+			{
+				NetServerIP = 1;
+				NetCopyIP(&NetOurIP, NetOurTftpIP);
+				NetOurGatewayIP = 0;
+			}
+#endif
 			break;
 #if (CONFIG_COMMANDS & CFG_CMD_PING)
 		case PING:
@@ -380,9 +444,18 @@ restart:
 		NetOurVLAN = getenv_VLAN("vlan");	/* VLANs must be read */
 		NetOurNativeVLAN = getenv_VLAN("nvlan");
 		break;
+#if defined(CFG_ATHRS26_PHY) && defined(CFG_ATHRHDR_EN)
+	case ATHRHDR:
+		athr_hdr_func();
+		break;
+#endif
 	default:
 		break;
 	}
+#if defined(CFG_ATHRS26_PHY) && defined(CFG_ATHRHDR_EN)
+	if(protocol == ATHRHDR)
+		goto skip_netloop;
+#endif
 
 	switch (net_check_prereq (protocol)) {
 	case 1:
@@ -403,8 +476,20 @@ restart:
 		switch (protocol) {
 		case TFTP:
 			/* always use ARP to get server ethernet address */
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+			if(NetRunTftpServer)
+			{
+				TftpServerStart();
+			}
+			else
+#endif
 			TftpStart();
 			break;
+#ifdef CFG_NMRP
+		case NMRP:
+			NmrpStart();
+			break;
+#endif
 
 #if (CONFIG_COMMANDS & CFG_CMD_DHCP)
 		case DHCP:
@@ -415,7 +500,7 @@ restart:
 			DhcpRequest();		/* Basically same as BOOTP */
 			break;
 #endif /* CFG_CMD_DHCP */
-
+#ifndef COMPRESSED_UBOOT
 		case BOOTP:
 			BootpTry = 0;
 			BootpRequest ();
@@ -425,11 +510,13 @@ restart:
 			RarpTry = 0;
 			RarpRequest ();
 			break;
+#endif
 #if (CONFIG_COMMANDS & CFG_CMD_PING)
 		case PING:
 			PingStart();
 			break;
 #endif
+
 #if (CONFIG_COMMANDS & CFG_CMD_NFS)
 		case NFS:
 			NfsStart();
@@ -475,6 +562,7 @@ restart:
 	 *	Main packet reception loop.  Loop receiving packets until
 	 *	someone sets `NetState' to a state that terminates.
 	 */
+skip_netloop:
 	for (;;) {
 		WATCHDOG_RESET();
 #ifdef CONFIG_SHOW_ACTIVITY
@@ -497,8 +585,12 @@ restart:
 			puts ("\nAbort\n");
 			return (-1);
 		}
-
+#if defined(CFG_ATHRS26_PHY) && defined(CFG_ATHRHDR_EN)
+                if(protocol != ATHRHDR)
+			ArpTimeoutCheck();
+#else
 		ArpTimeoutCheck();
+#endif
 
 		/*
 		 *	Check for a timeout, and run the timeout handler
@@ -506,7 +598,7 @@ restart:
 		 */
 		if (timeHandler && ((get_timer(0) - timeStart) > timeDelta)) {
 			thand_f *x;
-
+#if !defined(CFG_ATHRS26_PHY) && !defined(CFG_ATHRHDR_EN)
 #if defined(CONFIG_MII) || (CONFIG_COMMANDS & CFG_CMD_MII)
 #  if defined(CFG_FAULT_ECHO_LINK_DOWN) && \
       defined(CONFIG_STATUS_LED) &&	   \
@@ -521,6 +613,7 @@ restart:
 			}
 #  endif /* CFG_FAULT_ECHO_LINK_DOWN, ... */
 #endif /* CONFIG_MII, ... */
+#endif
 			x = timeHandler;
 			timeHandler = (thand_f *)0;
 			(*x)();
@@ -536,6 +629,15 @@ restart:
 			goto restart;
 
 		case NETLOOP_SUCCESS:
+#ifdef CFG_NMRP
+			if (NmrpState == STATE_CLOSING)
+				goto skip_netloop;
+#endif
+#if defined(CFG_ATHRS26_PHY) && defined(CFG_ATHRHDR_EN)
+			if(protocol == ATHRHDR)
+				return 1;
+#endif
+
 			if (NetBootFileXferSize > 0) {
 				char buf[10];
 				printf("Bytes transferred = %ld (%lx hex)\n",
@@ -690,6 +792,50 @@ NetSendUDPPacket(uchar *ether, IPaddr_t dest, int dport, int sport, int len)
 #if (CONFIG_COMMANDS & CFG_CMD_PING)
 static ushort PingSeqNo;
 
+#ifdef TFTP_RECOVER_MODE_PINGABLE
+static ushort PingID;
+static ushort PingOff;
+int MyPingReply(void)
+{
+	volatile IP_t *ip;
+	volatile ushort *s;
+	uchar *pkt,*mypkt;
+	uchar i,j;
+
+	pkt = (uchar *)NetTxPacket;
+	pkt += NetSetEther(pkt, NetPingEther, PROT_IP);
+
+	ip = (volatile IP_t *)pkt;
+
+	ip->ip_hl_v  = 0x45;
+	ip->ip_tos   = 0;
+	ip->ip_len   = htons(60);
+	ip->ip_id    = htons(NetIPID++);
+	ip->ip_off   = 0;   /* No fragmentation */
+	ip->ip_ttl   = 64;
+	ip->ip_p     = 0x01;
+	ip->ip_sum   = 0;
+	NetCopyIP((void*)&ip->ip_src, &NetOurIP); /* already in network byte order */
+	NetCopyIP((void*)&ip->ip_dst, &NetOurPingIP);         /* - "" - */
+	ip->ip_sum   = ~NetCksum((uchar *)ip, IP_HDR_SIZE_NO_UDP / 2);
+
+	s = &ip->udp_src;
+	s[0] = 0;
+	s[1] = 0;
+	s[2] = htons(PingID);                       /* identifier */
+	s[3] = htons(PingSeqNo);      /* sequence number */
+	mypkt = (uchar*)(s + 4);
+	for(i = 0,j = 0x61 ; i < 32; i ++)
+	{
+		if(j > 0x77) j = 0x61;
+		*(mypkt + i) = j ++;
+	}
+	s[1] = ~NetCksum((uchar *)s, 40);
+	//NetArpWaitTxPacketSize = (pkt - NetTxPacket) + IP_HDR_SIZE_NO_UDP + 8 + 14;
+	NetArpWaitTxPacketSize = 74;
+	(void)NetSendPacket( (uchar *)NetTxPacket,NetArpWaitTxPacketSize);
+}
+#endif
 int PingSend(void)
 {
 	static uchar mac[6];
@@ -1140,6 +1286,9 @@ NetReceive(volatile uchar * inpkt, int len)
 	IPaddr_t tmp;
 	int	x;
 	uchar *pkt;
+#if defined(CFG_ATHRS26_PHY) && defined(CFG_ATHRHDR_EN)
+        uint8_t type;
+#endif
 #if (CONFIG_COMMANDS & CFG_CMD_CDP)
 	int iscdp;
 #endif
@@ -1149,7 +1298,24 @@ NetReceive(volatile uchar * inpkt, int len)
 	printf("packet received\n");
 #endif
 
-	NetRxPkt = inpkt;
+#if defined(CFG_ATHRS26_PHY) && defined(CFG_ATHRHDR_EN)
+	type = (inpkt[1] & 0xf);
+	/* check for ack */
+       if(type == 0x6){
+               (*packetHandler)(inpkt,0,0,0);
+		return;
+	}
+	else if (type == 0x0) {
+	   inpkt = inpkt + ATHRHDR_LEN;  /* Remove ATHRHDR */
+	   len = len - ATHRHDR_LEN;
+	}
+	else{
+		printf("Packet dropped! Type invalid.\n");
+		return;
+	}
+#endif
+
+        NetRxPkt = inpkt;
 	NetRxPktLen = len;
 	et = (Ethernet_t *)inpkt;
 
@@ -1234,7 +1400,16 @@ NetReceive(volatile uchar * inpkt, int len)
 	}
 
 	switch (x) {
-
+#ifdef CFG_NMRP
+		case PROT_NMRP:
+			if(len <= MIN_ETHER_NMRP_LEN){
+				printf("bad packet len@!\n");
+				return;
+			}
+			memcpy(NmrpServerEther,et->et_src,6);
+			(*packetHandler)((uchar *)ip,0,0,PROT_NMRP);
+			break;
+#endif
 	case PROT_ARP:
 		/*
 		 * We have to deal with two types of ARP packets:
@@ -1284,6 +1459,11 @@ NetReceive(volatile uchar * inpkt, int len)
 			arp->ar_op = htons(ARPOP_REPLY);
 			memcpy   (&arp->ar_data[10], &arp->ar_data[0], 6);
 			NetCopyIP(&arp->ar_data[16], &arp->ar_data[6]);
+#ifdef TFTP_RECOVER_MODE_PINGABLE
+			//save for future use
+			memcpy   (NetPingEther,&arp->ar_data[0],6);
+			NetCopyIP(&NetOurPingIP,&arp->ar_data[6]);
+#endif
 			memcpy   (&arp->ar_data[ 0], NetOurEther, 6);
 			NetCopyIP(&arp->ar_data[ 6], &NetOurIP);
 			(void) eth_send((uchar *)et, (pkt - (uchar *)et) + ARP_HDR_SIZE);
@@ -1336,6 +1516,14 @@ NetReceive(volatile uchar * inpkt, int len)
 #ifdef ET_DEBUG
 		puts ("Got RARP\n");
 #endif
+
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+		if(NetRunTftpServer == 1 )
+		{
+			return;
+		}
+#endif
+
 		arp = (ARP_t *)ip;
 		if (len < ARP_HDR_SIZE) {
 			printf("bad length %d < %d\n", len, ARP_HDR_SIZE);
@@ -1409,6 +1597,16 @@ NetReceive(volatile uchar * inpkt, int len)
 			ICMP_t *icmph = (ICMP_t *)&(ip->udp_src);
 
 			switch (icmph->type) {
+#ifdef TFTP_RECOVER_MODE_PINGABLE
+			case ICMP_ECHO_REQUEST:
+				memcpy((void *)&PingSeqNo,(void *)&(icmph->un.echo.sequence),sizeof(ushort));
+				memcpy((void *)&PingID,(void *)&(icmph ->un.echo.id),sizeof(ushort));
+				NetOurPingIP = NetReadIP(&ip -> ip_src);
+				memcpy(NetPingEther,et->et_src,6);
+				memcpy((void *)&PingOff,ip -> ip_off,sizeof(ushort));
+				MyPingReply();
+				return;
+#endif
 			case ICMP_REDIRECT:
 				if (icmph->code != ICMP_REDIR_HOST)
 					return;
@@ -1431,6 +1629,10 @@ NetReceive(volatile uchar * inpkt, int len)
 		} else if (ip->ip_p != IPPROTO_UDP) {	/* Only UDP packets */
 			return;
 		}
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+		/* Saved the Client IP address anyway for future use */
+		TftpClientIP = NetReadIP(&ip->ip_src);
+#endif
 
 #ifdef CONFIG_UDP_CHECKSUM
 		if (ip->udp_xsum != 0) {
@@ -1752,3 +1954,319 @@ ushort getenv_VLAN(char *var)
 {
 	return (string_to_VLAN(getenv(var)));
 }
+
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+#if defined(CONFIG_WNR1000V2) || defined(CONFIG_WNR1100) || defined(CONFIG_WNR612) || defined(CONFIG_WNR2200) || defined(CONFIG_WNR2000V3) || defined(CONFIG_WNR1000V4) || defined(CONFIG_HW29763847P16P64) || defined(CONFIG_WNDR3700V3)
+extern int flash_sect_erase (ulong, ulong);
+#else
+unsigned int flash_in_which_sec (flash_info_t *f1, unsigned int offset)
+{
+	unsigned int sec_num;
+	if(f1 == NULL) return 0xFFFFFFFF;
+
+	for( sec_num = 0;sec_num < f1 ->sector_count; sec_num++) {
+		/* last sector*/
+		if(sec_num == f1 ->sector_count -1)
+		{
+			if((offset >= f1->start[sec_num] -f1->start[0]) && (offset < f1->size))
+			{
+				return sec_num;
+			}
+		}
+		else
+		{
+			if((offset >= f1 ->start[sec_num] -f1 ->start[0]) && (offset < f1 ->start[sec_num +1] -f1 ->start[0]))
+			{
+				return sec_num;
+			}
+		}
+	}
+	return 0xFFFFFFFF;
+}
+#endif
+
+void update_firmware(ulong addr, int firmware_size)
+{
+	if (firmware_size <= 0) {
+		printf("Incorrect firmware size\n");
+		return;
+	}
+#if defined(CFG_SINGLE_FIRMWARE)
+	ulong passed;
+	int offset_num;
+	uchar *src_addr;
+	ulong target_addr;
+	ulong timestamp_overflow_time;
+	int max_overflow;
+	ulong previous_timestamp;
+	ulong current_timestamp;
+
+	timestamp_overflow_time = ~0UL / CFG_HZ;
+	max_overflow = (NMRP_TIMEOUT_ACTIVE / timestamp_overflow_time);
+	overflow_count = 0;
+
+	previous_timestamp = NmrpAliveTimerStart;
+
+	for (offset_num = 0;
+	     offset_num < ((firmware_size / CFG_FLASH_SECTOR_SIZE) + 1);
+	     offset_num++) {
+		/* erase 64K */
+		flash_sect_erase(CFG_IMAGE_ADDR_BEGIN +
+				 offset_num * CFG_FLASH_SECTOR_SIZE,
+				 CFG_IMAGE_ADDR_BEGIN +
+				 ((offset_num + 1) * CFG_FLASH_SECTOR_SIZE) - 1);
+
+		/* Check if Alive-timer expires? */
+		current_timestamp = get_timer(0);
+		if (current_timestamp < previous_timestamp) {
+			printf("timestamp overflows\n");
+			overflow_count++;
+		}
+		printf("Alive-timer %u\n", (overflow_count * timestamp_overflow_time));
+
+		previous_timestamp = current_timestamp;
+
+		if (overflow_count + 1 >= max_overflow) {
+			printf("Active-timer expires\n");
+			NmrpSend();
+			overflow_count = 0;
+		}
+	}
+#elif defined(CONFIG_WNR1000V2) || defined(CONFIG_WNR1100) || defined(CONFIG_WNR612) || defined(CONFIG_WNR2200) || defined(CONFIG_WNR2000V3) || defined(CONFIG_WNDR3700V1H2) || defined(CONFIG_HW29763654P16P128)
+	flash_sect_erase (CFG_IMAGE_ADDR_BEGIN, CFG_IMAGE_ADDR_END-1);
+#else
+	unsigned int s_first,s_end;
+	s_first = flash_in_which_sec (&flash_info[0], CFG_IMAGE_ADDR_BEGIN - flash_info[0].start[0]);
+	s_end = flash_in_which_sec (&flash_info[0], CFG_IMAGE_ADDR_END - flash_info[0].start[0]) - 1;
+	printf ("Erase %d - %d sectors... ", s_first, s_end);
+	flash_erase (&flash_info[0], s_first, s_end);
+#endif
+	printf ("Copy image to Flash... ");
+#if defined(CFG_SINGLE_FIRMWARE)
+	for (offset_num = 0;
+	     offset_num < ((firmware_size / CFG_FLASH_SECTOR_SIZE) + 1);
+	     offset_num++) {
+		src_addr = addr + offset_num * CFG_FLASH_SECTOR_SIZE;
+		target_addr = CFG_IMAGE_ADDR_BEGIN +
+			      (offset_num * CFG_FLASH_SECTOR_SIZE);
+		flash_write(src_addr, target_addr, CFG_FLASH_SECTOR_SIZE);
+
+		/* Check if Alive-timer expires? */
+		current_timestamp = get_timer(0);
+		if (current_timestamp < previous_timestamp) {
+			printf("timestamp overflows\n");
+			overflow_count++;
+		}
+		printf("Alive-timer %u\n", (overflow_count * timestamp_overflow_time));
+
+		previous_timestamp = current_timestamp;
+
+		if (overflow_count + 1 >= max_overflow) {
+			printf("Active-timer expires\n");
+			NmrpSend();
+			overflow_count = 0;
+		}
+	}
+#else
+	flash_write ((uchar *)addr, CFG_IMAGE_ADDR_BEGIN , CFG_IMAGE_LEN);
+#endif
+#ifdef CFG_NMRP
+	if(NmrpState != 0)
+		return;
+#endif
+	printf ("Done\nRebooting...\n");
+
+	do_reset(NULL,0,0,NULL);
+}
+
+void StartTftpServerToRecoveFirmware (void)
+{
+	NetRunTftpServer = 1;
+	load_addr = 0x80060000;
+	ulong addr;
+	image_header_t *hdr;
+	int file_size;
+
+tftpstart:
+	addr = load_addr;
+	file_size = NetLoop (TFTP);
+	if (file_size < 1)
+	{
+		printf ("\nFirmware recovering from TFTP server is stopped or failed! :( \n");
+		NetRunTftpServer = 0;
+		return;
+	}
+
+	//  copy Image to flash
+
+#ifdef CFG_NMRP
+	if (NmrpState == STATE_CLOSED)
+		return;
+	else if ( NmrpState !=0 )
+		NmrpState = STATE_CLOSING;
+#endif
+	hdr = (image_header_t *)(addr + HEADER_LEN);
+	if (ntohl(hdr->ih_magic) != IH_MAGIC) {
+		puts ("Bad Magic Number,it is forbidden to be written to flash!!\n");
+		ResetTftpServer();
+		goto tftpstart;
+	}
+#ifdef NETGEAR_BOARD_ID_SUPPORT
+	if (!board_match_image_hw_id(addr)) {
+		puts ("Board HW ID mismatch,it is forbidden to be written to flash!!\n");
+		ResetTftpServer();
+		goto tftpstart;
+	}
+	if (!board_match_image_model_id(addr)) {
+		puts ("Board MODEL ID mismatch,it is forbidden to be written to flash!!\n");
+		ResetTftpServer();
+		goto tftpstart;
+	}
+#endif
+	update_firmware(addr + HEADER_LEN, file_size - HEADER_LEN);
+#ifdef CFG_NMRP
+	if (NmrpState == STATE_CLOSING)
+	{
+		NetSetHandler(NmrpHandler);
+		NmrpSend();
+	}
+#endif
+	/*
+	 *  It indicates that tftp server would leave running state when
+	 *  this function returns.
+	 */
+	NetRunTftpServer = 0;
+}
+
+#if defined(CFG_NMRP) && (defined(CFG_SINGLE_FIRMWARE) || defined(CONFIG_WNR1000V2) || defined(CONFIG_WNR612) || defined(CONFIG_WNR2200) || defined(CONFIG_WNR2000V3))
+void UpgradeFirmwareFromNmrpServer(void)
+{
+	NetRunTftpServer = 1;
+	load_addr = 0x80060000;
+	ulong addr;
+	image_header_t *hdr;
+	int file_size;
+
+	addr = load_addr;
+	file_size = NetLoop (TFTP);
+	if (file_size < 1)
+	{
+		printf ("\nFirmware recovering from TFTP server is stopped or failed! :( \n");
+		NetRunTftpServer = 0;
+		return;
+	}
+
+#if defined(CFG_SINGLE_FIRMWARE)
+	NmrpState = STATE_TFTPUPLOADING;
+	NetSetHandler(NmrpHandler);
+	NmrpSend();
+#endif
+
+	printf("Ignore Magic number checking when upgrade via NMRP,Magic number is %x!\n", IH_MAGIC);
+	//  copy Image to flash
+#ifdef NETGEAR_BOARD_ID_SUPPORT
+	if (board_match_image_hw_id(addr)) {
+		update_firmware(addr + HEADER_LEN, file_size - HEADER_LEN);
+		board_update_image_model_id(addr);
+	}
+	else {
+		puts ("Board HW ID mismatch,it is forbidden to be written to flash!!\n");
+	}
+#else
+	update_firmware(addr + HEADER_LEN, file_size - HEADER_LEN);
+#endif
+
+#if defined(CFG_SINGLE_FIRMWARE)
+	/* firmware write to flash done */
+	NmrpFwUPOption = 0;
+	if (NmrpSTUPOption == 1) {
+		NmrpState = STATE_CONFIGING;
+	} else {
+		NmrpState = STATE_CLOSING;
+	}
+#else
+	NmrpState = STATE_CLOSING;
+#endif
+	NetSetHandler(NmrpHandler);
+	NmrpSend();
+	NetRunTftpServer = 0;
+}
+#endif
+
+#if defined(CFG_NMRP) && defined(CFG_SINGLE_FIRMWARE)
+void UpgradeStringTableFromNmrpServer(int table_num)
+{
+	NetRunTftpServer = 1;
+	load_addr = 0x80060000;
+	ulong addr;
+	image_header_t *hdr;
+	int file_size;
+
+	addr = load_addr;
+	memset(addr, 0, CFG_STRING_TABLE_LEN);
+	file_size = NetLoop (TFTP);
+	if (file_size < 1)
+	{
+		printf ("\nUpdating string table %d from TFTP server \
+			is stopped or failed! :( \n", table_num);
+		NetRunTftpServer = 0;
+		return;
+	}
+
+	/* TFTP Uploading done */
+	NmrpState = STATE_TFTPUPLOADING;
+	NetSetHandler(NmrpHandler);
+	NmrpSend();
+
+	/* Write String Table to flash */
+	board_upgrade_string_table((uchar *)addr, table_num, file_size);
+
+	/* upgrade string table done, check if more files */
+	NmrpStringTableUpdateIndex++;
+	if (NmrpStringTableUpdateIndex == NmrpStringTableUpdateCount)
+		NmrpSTUPOption = 0;
+	if (NmrpFwUPOption == 0 && NmrpSTUPOption == 0) {
+		printf("Upgrading all done\n");
+		NmrpState = STATE_CLOSING;
+		NetSetHandler(NmrpHandler);
+		NmrpSend();
+	} else {
+		printf("More files to be upgrading\n");
+		NmrpState = STATE_CONFIGING;
+		NetSetHandler(NmrpHandler);
+		NmrpSend();
+	}
+	NetRunTftpServer = 0;
+}
+#endif
+
+void ResetTftpServer(void)
+{
+	timeHandler = 0;
+#ifdef CFG_NMRP
+	if(NmrpState != 0)
+	{
+		NmrpState = STATE_CONFIGING;
+		NmrpSend();
+	}
+	else
+#endif
+	NetState = NETLOOP_RESTART;
+}
+#endif
+#ifdef CFG_NMRP
+void StartNmrpClient(void)
+{
+        if( NetLoop(NMRP) < 1)
+        {
+                printf("\n nmrp server is stopped or failed !\n");
+                return;
+        }
+}
+void ResetBootup_usual(void)
+{
+        timeHandler = 0;
+        NetState = NETLOOP_SUCCESS;
+}
+#endif
+

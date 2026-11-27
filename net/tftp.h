@@ -15,6 +15,9 @@
 
 /* tftp.c */
 extern void	TftpStart (void);	/* Begin TFTP get */
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+extern void     TftpServerStart (void);
+#endif
 
 /**********************************************************************/
 

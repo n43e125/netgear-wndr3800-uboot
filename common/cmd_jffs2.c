@@ -98,6 +98,10 @@
 
 #include <cramfs/cramfs_fs.h>
 
+#if (CONFIG_FS & CFG_FS_SQUASHFS)
+#include <squashfs/squashfs_fs.h>
+#endif
+
 #if (CONFIG_COMMANDS & CFG_CMD_NAND)
 #ifdef CFG_NAND_LEGACY
 #include <linux/mtd/nand_legacy.h>
@@ -174,6 +178,14 @@ extern int cramfs_check (struct part_info *info);
 extern int cramfs_load (char *loadoffset, struct part_info *info, char *filename);
 extern int cramfs_ls (struct part_info *info, char *filename);
 extern int cramfs_info (struct part_info *info);
+
+
+#if (CONFIG_FS & CFG_FS_SQUASHFS)
+extern int squashfs_check(struct part_info *info);
+extern int squashfs_load (char *loadoffset, struct part_info *info, char *filename);
+extern int squashfs_ls (struct part_info *info, char *filename);
+extern int squashfs_info (struct part_info *info);
+#endif
 
 static struct part_info* jffs2_part_info(struct mtd_device *dev, unsigned int part_num);
 
@@ -1638,6 +1650,9 @@ int mtdparts_init(void)
 
 		if (list_empty(&devices)) {
 			printf("mtdparts_init: no valid partitions\n");
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+			StartTftpServerToRecoveFirmware();
+#endif
 			return 1;
 		}
 
@@ -1862,14 +1877,23 @@ int do_jffs2_fsload(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 	if ((part = jffs2_part_info(current_dev, current_partnum))){
 
-		/* check partition type for cramfs */
-		fsname = (cramfs_check(part) ? "CRAMFS" : "JFFS2");
-		printf("### %s loading '%s' to 0x%lx\n", fsname, filename, offset);
-
 		if (cramfs_check(part)) {
+			fsname = "CRAMFS";
+			printf("### %s loading '%s' to 0x%lx\n", fsname, filename, offset);
 			size = cramfs_load ((char *) offset, part, filename);
-		} else {
-			/* if this is not cramfs assume jffs2 */
+		}
+#if (CONFIG_FS & CFG_FS_SQUASHFS)
+		else if (squashfs_check(part))
+		{
+			fsname = "SQUASHFS";
+			printf("### %s loading '%s' to 0x%lx\n", fsname, filename, offset);
+			size = squashfs_load ((char *) offset, part, filename);
+		}
+#endif
+		else {
+			fsname = "JFFS2";
+			/* if this is not cramfs or squashfs assume jffs2 */
+			printf("### %s loading '%s' to 0x%lx\n", fsname, filename, offset);
 			size = jffs2_1pass_load((char *)offset, part, filename);
 		}
 
@@ -1881,6 +1905,9 @@ int do_jffs2_fsload(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 			setenv("filesize", buf);
 		} else {
 			printf("### %s LOAD ERROR<%x> for %s!\n", fsname, size, filename);
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+			StartTftpServerToRecoveFirmware();
+#endif
 		}
 
 		return !(size > 0);
@@ -1916,7 +1943,14 @@ int do_jffs2_ls(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		/* check partition type for cramfs */
 		if (cramfs_check(part)) {
 			ret = cramfs_ls (part, filename);
-		} else {
+		}
+#if (CONFIG_FS & CFG_FS_SQUASHFS)
+		else if(squashfs_check(part))
+		{
+			ret = squashfs_ls (part, filename);
+		}
+#endif
+		 else {
 			/* if this is not cramfs assume jffs2 */
 			ret = jffs2_1pass_ls(part, filename);
 		}
@@ -1948,13 +1982,23 @@ int do_jffs2_fsinfo(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 	if ((part = jffs2_part_info(current_dev, current_partnum))){
 
-		/* check partition type for cramfs */
-		fsname = (cramfs_check(part) ? "CRAMFS" : "JFFS2");
-		printf("### filesystem type is %s\n", fsname);
-
 		if (cramfs_check(part)) {
+			fsname = "CRAMFS";
+			printf("### filesystem type is %s\n", fsname);
 			ret = cramfs_info (part);
-		} else {
+		}
+#if (CONFIG_FS & CFG_FS_SQUASHFS)
+		else if(squashfs_check(part))
+		{
+			fsname = "SQUASHFS";
+			printf("### filesystem type is %s\n", fsname);
+			ret = squashfs_info (part);
+		}
+#endif
+		else
+		{
+			fsname = "JFFS2";
+			printf("### filesystem type is %s\n", fsname);
 			/* if this is not cramfs assume jffs2 */
 			ret = jffs2_1pass_info(part);
 		}

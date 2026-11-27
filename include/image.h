@@ -131,9 +131,31 @@
 #define IH_COMP_NONE		0	/*  No	 Compression Used	*/
 #define IH_COMP_GZIP		1	/* gzip	 Compression Used	*/
 #define IH_COMP_BZIP2		2	/* bzip2 Compression Used	*/
+#define IH_COMP_LZMA		3	/* lzma  Compression Used	*/
 
+#if defined(CONFIG_WNDR3700U)
+#define IH_MAGIC	0x33373030	/* Image Magic Number       */
+#elif defined(CONFIG_WNDR3700V1H2) || defined(CONFIG_HW29763654P16P128)
+#define IH_MAGIC	0x33373031	/* Image Magic Number "wndr3700v1h2" */
+#elif defined(CONFIG_WNDR3700V3)
+#define IH_MAGIC	0x33373033	/* Image Magic Number "wndr3700v3" */
+#elif defined(CONFIG_WNR1000V2) || defined(CONFIG_WNR612) || defined(CONFIG_WNR2200) || defined(CONFIG_WNR2000V3)
+#define IH_MAGIC	GetMagicNumberOfBoard()	/* WNR1000v2-VC's Image Magic Number is "1000", WNR1000v2's one is "1001" and WNR612's Magic Number is "6122"*/
+#elif defined(CONFIG_WNR1100)
+#define IH_MAGIC	0x31313030	/* Image Magic Number "1100" */
+#elif defined(CONFIG_WNR1000V4)
+#define IH_MAGIC	0x31303034	/* Image Magic Number "1004" */
+#elif defined(CONFIG_HW29763847P16P64)
+#define IH_MAGIC	0x30313530	/* Image Magic Number "0150" */
+#else
 #define IH_MAGIC	0x27051956	/* Image Magic Number		*/
+#endif
 #define IH_NMLEN		32	/* Image Name Length		*/
+
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+#define HEADER_REAL_LEN 0x7E
+#define HEADER_LEN  (HEADER_REAL_LEN + (HEADER_REAL_LEN % 4))
+#endif
 
 /*
  * all data in network byte order (aka natural aka bigendian)

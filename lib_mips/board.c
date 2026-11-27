@@ -62,6 +62,117 @@ static ulong mem_malloc_start;
 static ulong mem_malloc_end;
 static ulong mem_malloc_brk;
 
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+static int factory_default = 0;
+extern ulong timeStart;
+extern ulong timeDelta;
+
+extern thand_f *timeHandler;
+
+uint32_t GetMagicNumberOfBoard(void)
+{
+#if defined(CONFIG_WNR1000V2)
+	return GetMagicNumberOfWnr1000v2();
+#elif defined(CONFIG_WNR612)
+	return GetMagicNumberOfWnr612();
+#elif defined(CONFIG_WNR2200)
+	return get_magic_number_of_wnr2200();
+#elif defined(CONFIG_WNR2000V3)
+	return get_magic_number_of_wnr2000v3();
+#endif
+}
+
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+/*return value 0:not pressed, 1:pressed*/
+int reset_button_is_press()
+{
+#if defined(CONFIG_WNDR3700U)
+	return wndr3700u_reset_button_is_press();
+#elif defined(CONFIG_WNR1000V2)
+	return wnr1000v2_reset_button_is_press();
+#elif defined(CONFIG_WNR1100)
+	return wnr1100_reset_button_is_press();
+#else
+	return 0;
+#endif
+}
+#endif
+
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+void reset_default_LedSet()
+{
+#if defined(CONFIG_WNDR3700U)
+	wndr3700u_reset_default_LedSet();
+#elif defined(CONFIG_WNR1000V2)
+	wnr1000v2_reset_default_LedSet();
+#elif defined(CONFIG_WNR1100)
+	wnr1100_reset_default_LedSet();
+#else
+	return;
+#endif
+}
+#endif
+
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+/*ledstat 0:on; 1:off*/
+void power_led(int ledstat)
+{
+#if defined(CONFIG_WNDR3700U)
+	wndr3700u_power_led(ledstat);
+#elif defined(CONFIG_WNR1000V2)
+	wnr1000v2_power_led(ledstat);
+#elif defined(CONFIG_WNR1100)
+	wnr1100_power_led(ledstat);
+#else
+	return;
+#endif
+}
+#endif
+
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+/*ledstat 0:on; 1:off*/
+void test_led(int ledstat)
+{
+#if defined(CONFIG_WNDR3700U)
+	wndr3700u_test_led(ledstat);
+#elif defined(CONFIG_WNR1000V2)
+	wnr1000v2_test_led(ledstat);
+#elif defined(CONFIG_WNR1100)
+	wnr1100_test_led(ledstat);
+#else
+	return;
+#endif
+}
+#endif
+
+void start_tftp_recovery_mode()
+{
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+    power_led(0);
+#else
+    board_power_led(0);
+#endif
+    printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+    StartTftpServerToRecoveFirmware ();/*Enter recovery mode when press reset button to upgrade mode*/
+}
+
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+/*erase the config sector of flash*/
+void reset_default()
+{
+#if defined(CONFIG_WNDR3700U)
+	wndr3700u_reset_default();
+#elif defined(CONFIG_WNR1000V2)
+	wnr1000v2_reset_default();
+#elif defined(CONFIG_WNR1100)
+	wnr1100_reset_default();
+#else
+	return;
+#endif
+}
+#endif
+
+#endif
 
 /*
  * The Malloc area is immediately below the monitor copy in DRAM
@@ -159,17 +270,23 @@ static int init_baudrate (void)
 typedef int (init_fnc_t) (void);
 
 init_fnc_t *init_sequence[] = {
+#ifndef COMPRESSED_UBOOT
 	timer_init,
+#endif
 	env_init,		/* initialize environment */
 #ifdef CONFIG_INCA_IP
 	incaip_set_cpuclk,	/* set cpu clock according to environment variable */
 #endif
 	init_baudrate,		/* initialze baudrate settings */
+#ifndef COMPRESSED_UBOOT
 	serial_init,		/* serial communications setup */
+#endif
 	console_init_f,
 	display_banner,		/* say that we are here */
+#ifndef COMPRESSED_UBOOT
 	checkboard,
 	init_func_ram,
+#endif
 	NULL,
 };
 
@@ -181,6 +298,9 @@ void board_init_f(ulong bootflag)
 	init_fnc_t **init_fnc_ptr;
 	ulong addr, addr_sp, len = (ulong)&uboot_end - CFG_MONITOR_BASE;
 	ulong *s;
+#ifdef COMPRESSED_UBOOT
+        char board_string[50];
+#endif
 #ifdef CONFIG_PURPLE
 	void copy_code (ulong);
 #endif
@@ -198,6 +318,14 @@ void board_init_f(ulong bootflag)
 			hang ();
 		}
 	}
+
+#ifdef COMPRESSED_UBOOT
+        checkboard(board_string);
+        printf("%s\n\n",board_string);
+        gd->ram_size = bootflag;
+	puts ("DRAM:  ");
+	print_size (gd->ram_size, "\n");
+#endif
 
 	/*
 	 * Now that we have DRAM mapped and working, we can
@@ -419,6 +547,71 @@ void board_init_r (gd_t *id, ulong dest_addr)
 
 	/* main_loop() can return to retry autoboot, if so just run it again. */
 	for (;;) {
+#ifdef FIRMWARE_RECOVER_FROM_TFTP_SERVER
+		int i,j;
+
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+		NetSetTimeout (CFG_HZ/10,reset_default_LedSet);
+#else
+		NetSetTimeout (CFG_HZ/10,board_reset_default_LedSet);
+#endif
+		for (j = 0;j < 12; j++) {
+			if(j >= 5) {
+				if( (j % 2) ==1)
+					printf("Factory Reset Mode\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+				else
+					printf("                  \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+
+				factory_default = 1;
+			}
+			/*each cycle delay 1 s (100 * 10000 us)*/
+			for (i = 0;i< 100;i++) {
+				//reset button isn't pressed
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+				if(!reset_button_is_press())
+#else
+				if(!board_reset_button_is_press())
+#endif
+				{
+					goto next;
+				}
+				/*first cycle power on test led*/
+				if(!i)
+				{
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+					test_led(0);
+#else
+					board_test_led(0);
+#endif
+				}
+
+				if(j >= 5) {
+					if (timeHandler && ((get_timer(0) - timeStart) > timeDelta)) {
+						thand_f *x;
+						x = timeHandler;
+						timeHandler = (thand_f *)0;
+						(*x)();
+					}
+				}
+				udelay(10000);
+			}
+		}
+		factory_default = 0;
+		start_tftp_recovery_mode();
+next:
+		if(!factory_default)
+			goto Normal;
+
+#if defined(CONFIG_WNDR3700U)||defined(CONFIG_WNR1000V2)||defined(CONFIG_WNR1100)
+		reset_default();
+#else
+		board_reset_default();
+#endif
+Normal:
+#endif
+#ifdef CFG_NMRP
+		StartNmrpClient();
+#endif
 		main_loop ();
 	}
 
